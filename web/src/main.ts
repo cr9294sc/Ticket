@@ -8,15 +8,23 @@ async function bootstrap() {
   const stationsUrl = './data/stations.geojson';
   const statsUrl = './data/stats.json';
 
-  try {
-    // 1. Fetch Stats JSON
-    const res = await fetch(statsUrl);
-    if (!res.ok) throw new Error(`HTTP ${res.status} when loading stats.json`);
-    const stats: StatsPayload = await res.json();
+    // 1. Fetch Stats & GeoJSON Data
+    const [statsRes, routesRes, stationsRes] = await Promise.all([
+      fetch(statsUrl),
+      fetch(routesUrl),
+      fetch(stationsUrl)
+    ]);
+    if (!statsRes.ok) throw new Error(`HTTP ${statsRes.status} when loading stats.json`);
+    if (!routesRes.ok) throw new Error(`HTTP ${routesRes.status} when loading routes.geojson`);
+    if (!stationsRes.ok) throw new Error(`HTTP ${stationsRes.status} when loading stations.geojson`);
+
+    const stats: StatsPayload = await statsRes.json();
+    const routesData = await routesRes.json();
+    const stationsData = await stationsRes.json();
 
     // 2. Initialize Map Viewer
     const mapViewer = new MapViewer('map-container');
-    mapViewer.init(routesUrl, stationsUrl);
+    mapViewer.init(routesData, stationsData);
 
     // 3. Initialize Dashboard Charts & KPIs
     const dashboard = new StatsDashboard();
