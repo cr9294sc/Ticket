@@ -1,0 +1,299 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          113.308,
+          23.392
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "广州",
+        "code": "CAN",
+        "country": "中国",
+        "departureCount": 0,
+        "name": "广州白云国际机场",
+        "nameEn": "Guangzhou Baiyun International Airport",
+        "type": "airport",
+        "visitCount": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          139.781,
+          35.549
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "东京",
+        "code": "HND",
+        "country": "日本",
+        "departureCount": 1,
+        "name": "东京羽田机场",
+        "nameEn": "Tokyo Haneda Airport",
+        "type": "airport",
+        "visitCount": 2
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -73.778,
+          40.641
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "纽约",
+        "code": "JFK",
+        "country": "美国",
+        "departureCount": 0,
+        "name": "纽约约翰·肯尼迪国际机场",
+        "nameEn": "New York John F. Kennedy International Airport",
+        "type": "airport",
+        "visitCount": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -0.461,
+          51.47
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "伦敦",
+        "code": "LHR",
+        "country": "英国",
+        "departureCount": 1,
+        "name": "伦敦希思罗机场",
+        "nameEn": "London Heathrow Airport",
+        "type": "airport",
+        "visitCount": 2
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          116.587,
+          40.08
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "北京",
+        "code": "PEK",
+        "country": "中国",
+        "departureCount": 2,
+        "name": "北京首都国际机场",
+        "nameEn": "Beijing Capital International Airport",
+        "type": "airport",
+        "visitCount": 3
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          116.41,
+          39.509
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "北京",
+        "code": "PKX",
+        "country": "中国",
+        "departureCount": 1,
+        "name": "北京大兴国际机场",
+        "nameEn": "Beijing Daxing International Airport",
+        "type": "airport",
+        "visitCount": 2
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          121.805,
+          31.143
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 0,
+        "city": "上海",
+        "code": "PVG",
+        "country": "中国",
+        "departureCount": 1,
+        "name": "上海浦东国际机场",
+        "nameEn": "Shanghai Pudong International Airport",
+        "type": "airport",
+        "visitCount": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          103.991,
+          1.364
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "新加坡",
+        "code": "SIN",
+        "country": "新加坡",
+        "departureCount": 1,
+        "name": "新加坡樟宜机场",
+        "nameEn": "Singapore Changi Airport",
+        "type": "airport",
+        "visitCount": 2
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          121.32,
+          31.194
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "上海",
+        "code": "上海虹桥",
+        "country": "中国",
+        "departureCount": 2,
+        "name": "上海虹桥站",
+        "nameEn": "Shanghai Hongqiao Railway Station",
+        "type": "railway_station",
+        "visitCount": 3
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          116.379,
+          39.865
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "北京",
+        "code": "北京南",
+        "country": "中国",
+        "departureCount": 1,
+        "name": "北京南站",
+        "nameEn": "Beijingnan Railway Station",
+        "type": "railway_station",
+        "visitCount": 2
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          118.798,
+          31.97
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "南京",
+        "code": "南京南",
+        "country": "中国",
+        "departureCount": 0,
+        "name": "南京南站",
+        "nameEn": "Nanjingnan Railway Station",
+        "type": "railway_station",
+        "visitCount": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          113.269,
+          22.989
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 0,
+        "city": "广州",
+        "code": "广州南",
+        "country": "中国",
+        "departureCount": 1,
+        "name": "广州南站",
+        "nameEn": "Guangzhounan Railway Station",
+        "type": "railway_station",
+        "visitCount": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          120.213,
+          30.291
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "杭州",
+        "code": "杭州东",
+        "country": "中国",
+        "departureCount": 0,
+        "name": "杭州东站",
+        "nameEn": "Hangzhoudong Railway Station",
+        "type": "railway_station",
+        "visitCount": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          114.425,
+          30.607
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "arrivalCount": 1,
+        "city": "武汉",
+        "code": "武汉",
+        "country": "中国",
+        "departureCount": 1,
+        "name": "武汉站",
+        "nameEn": "Wuhan Railway Station",
+        "type": "railway_station",
+        "visitCount": 2
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

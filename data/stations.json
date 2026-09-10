@@ -1,0 +1,131 @@
+{
+  "PEK": {
+    "name": "北京首都国际机场",
+    "nameEn": "Beijing Capital International Airport",
+    "city": "北京",
+    "country": "中国",
+    "type": "airport",
+    "coordinates": [116.587, 40.080]
+  },
+  "PKX": {
+    "name": "北京大兴国际机场",
+    "nameEn": "Beijing Daxing International Airport",
+    "city": "北京",
+    "country": "中国",
+    "type": "airport",
+    "coordinates": [116.410, 39.509]
+  },
+  "SHA": {
+    "name": "上海虹桥国际机场",
+    "nameEn": "Shanghai Hongqiao International Airport",
+    "city": "上海",
+    "country": "中国",
+    "type": "airport",
+    "coordinates": [121.336, 31.198]
+  },
+  "PVG": {
+    "name": "上海浦东国际机场",
+    "nameEn": "Shanghai Pudong International Airport",
+    "city": "上海",
+    "country": "中国",
+    "type": "airport",
+    "coordinates": [121.805, 31.143]
+  },
+  "CAN": {
+    "name": "广州白云国际机场",
+    "nameEn": "Guangzhou Baiyun International Airport",
+    "city": "广州",
+    "country": "中国",
+    "type": "airport",
+    "coordinates": [113.308, 23.392]
+  },
+  "CTU": {
+    "name": "成都双流国际机场",
+    "nameEn": "Chengdu Shuangliu International Airport",
+    "city": "成都",
+    "country": "中国",
+    "type": "airport",
+    "coordinates": [103.947, 30.578]
+  },
+  "HND": {
+    "name": "东京羽田机场",
+    "nameEn": "Tokyo Haneda Airport",
+    "city": "东京",
+    "country": "日本",
+    "type": "airport",
+    "coordinates": [139.781, 35.549]
+  },
+  "SIN": {
+    "name": "新加坡樟宜机场",
+    "nameEn": "Singapore Changi Airport",
+    "city": "新加坡",
+    "country": "新加坡",
+    "type": "airport",
+    "coordinates": [103.991, 1.364]
+  },
+  "LHR": {
+    "name": "伦敦希思罗机场",
+    "nameEn": "London Heathrow Airport",
+    "city": "伦敦",
+    "country": "英国",
+    "type": "airport",
+    "coordinates": [-0.461, 51.470]
+  },
+  "JFK": {
+    "name": "纽约约翰·肯尼迪国际机场",
+    "nameEn": "New York John F. Kennedy International Airport",
+    "city": "纽约",
+    "country": "美国",
+    "type": "airport",
+    "coordinates": [-73.778, 40.641]
+  },
+  "北京南": {
+    "name": "北京南站",
+    "nameEn": "Beijingnan Railway Station",
+    "city": "北京",
+    "country": "中国",
+    "type": "railway_station",
+    "coordinates": [116.379, 39.865]
+  },
+  "上海虹桥": {
+    "name": "上海虹桥站",
+    "nameEn": "Shanghai Hongqiao Railway Station",
+    "city": "上海",
+    "country": "中国",
+    "type": "railway_station",
+    "coordinates": [121.320, 31.194]
+  },
+  "杭州东": {
+    "name": "杭州东站",
+    "nameEn": "Hangzhoudong Railway Station",
+    "city": "杭州",
+    "country": "中国",
+    "type": "railway_station",
+    "coordinates": [120.213, 30.291]
+  },
+  "南京南": {
+    "name": "南京南站",
+    "nameEn": "Nanjingnan Railway Station",
+    "city": "南京",
+    "country": "中国",
+    "type": "railway_station",
+    "coordinates": [118.798, 31.970]
+  },
+  "广州南": {
+    "name": "广州南站",
+    "nameEn": "Guangzhounan Railway Station",
+    "city": "广州",
+    "country": "中国",
+    "type": "railway_station",
+    "coordinates": [113.269, 22.989]
+  },
+  "武汉": {
+    "name": "武汉站",
+    "nameEn": "Wuhan Railway Station",
+    "city": "武汉",
+    "country": "中国",
+    "type": "railway_station",
+    "coordinates": [114.425, 30.607]
+  }
+}
+

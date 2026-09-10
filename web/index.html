@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>个人行程轨迹与统计 · TripTracker</title>
+  
+  <!-- MapLibre GL CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="./src/styles/main.css" />
+
+  <!-- MapLibre GL JS & Apache ECharts -->
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo-group">
+      <h1>✈️ 🚆 TripTracker</h1>
+      <p>个人火车 / 飞机行程足迹与统计可视化看板</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <select id="filter-year" class="filter-select">
+        <option value="all">所有年份</option>
+      </select>
+
+      <select id="filter-type" class="filter-select">
+        <option value="all">全部方式 (飞机 & 火车)</option>
+        <option value="flight">仅看飞行 ✈️</option>
+        <option value="train">仅看铁路 🚆</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- KPI Overview -->
+  <section class="kpi-container">
+    <div class="kpi-card">
+      <div class="kpi-title">总里程</div>
+      <div class="kpi-value" id="kpi-total-dist">-- km</div>
+      <div class="kpi-sub" id="kpi-total-trips">-- 次出行</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">飞行里程</div>
+      <div class="kpi-value" style="color: var(--flight-color);" id="kpi-flight-dist">-- km</div>
+      <div class="kpi-sub">全球飞航大圆航线</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">铁路里程</div>
+      <div class="kpi-value" style="color: var(--train-color);" id="kpi-train-dist">-- km</div>
+      <div class="kpi-sub">中国高铁与干线铁路</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">在途总用时</div>
+      <div class="kpi-value" id="kpi-total-hours">-- h</div>
+      <div class="kpi-sub">旅途飞行与车轮奔波</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-title">打卡足迹</div>
+      <div class="kpi-value" id="kpi-places">-- 城</div>
+      <div class="kpi-sub">涉及的国家与城市点位</div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main>
+    <!-- Map View -->
+    <section class="map-section">
+      <div id="map-container"></div>
+      <div class="map-legend">
+        <div class="legend-item">
+          <span class="legend-line-flight"></span>
+          <span>飞机航线 (Great Circle 弧线)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-line-train"></span>
+          <span>铁路线路 (跨城连接)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot-airport"></span>
+          <span>机场点位</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot-railway"></span>
+          <span>火车站打卡点</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Charts -->
+    <section class="dashboard-section">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">📅 历年出行趋势 (里程与频次)</div>
+        </div>
+        <div id="chart-trend" class="chart-body"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">📊 交通方式与里程分布</div>
+        </div>
+        <div id="chart-mode" class="chart-body"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">✈️ 常乘机型分布</div>
+        </div>
+        <div id="chart-fleet" class="chart-body"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">📍 最常到访城市 Top 10</div>
+        </div>
+        <div id="chart-city" class="chart-body"></div>
+      </div>
+    </section>
+
+    <!-- Trips Timeline List -->
+    <section class="trips-section">
+      <div class="section-title-bar">
+        <h2 class="section-title">🕒 行程明细记录</h2>
+        <span id="trips-count-badge" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+      </div>
+      <div id="trips-grid" class="trips-grid"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>TripTracker · 基于 C++ SSG 数据计算引擎与 MapLibre / ECharts 构建 · 部署于 GitHub Pages</p>
+  </footer>
+
+  <!-- Main Entry Script -->
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
+

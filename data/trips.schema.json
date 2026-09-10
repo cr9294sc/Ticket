@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cr9294sc/Ticket/data/trips.schema.json",
+  "title": "TripList",
+  "description": "A list of personal travel trips including flights and trains",
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/Trip"
+  },
+  "$defs": {
+    "Trip": {
+      "type": "object",
+      "required": ["id", "type", "date", "departure", "arrival"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the trip"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["flight", "train"],
+          "description": "Transportation type"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Date of departure (YYYY-MM-DD)"
+        },
+        "departure": {
+          "type": "string",
+          "description": "Departure airport IATA code or train station name"
+        },
+        "arrival": {
+          "type": "string",
+          "description": "Arrival airport IATA code or train station name"
+        },
+        "depTime": {
+          "type": "string",
+          "pattern": "^\\d{2}:\\d{2}$",
+          "description": "Departure local time in 24h format (HH:mm)"
+        },
+        "arrTime": {
+          "type": "string",
+          "pattern": "^\\d{2}:\\d{2}$",
+          "description": "Arrival local time in 24h format (HH:mm)"
+        },
+        "distanceKm": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Optional manual distance in kilometers (defaults to Haversine calculation)"
+        },
+        "remarks": {
+          "type": "string",
+          "description": "Personal remarks or diary notes"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "flight" } }
+          },
+          "then": {
+            "properties": {
+              "flightNumber": {
+                "type": "string",
+                "description": "Flight number (e.g. NH962, CA1501)"
+              },
+              "airline": {
+                "type": "string",
+                "description": "Operating airline name"
+              },
+              "aircraft": {
+                "type": "string",
+                "description": "Aircraft model (e.g. A350-900, B787-9)"
+              },
+              "registration": {
+                "type": "string",
+                "description": "Aircraft tail registration code (e.g. B-1083)"
+              },
+              "cabinClass": {
+                "type": "string",
+                "enum": ["economy", "premium_economy", "business", "first"],
+                "description": "Flight cabin class"
+              },
+              "seat": {
+                "type": "string",
+                "description": "Assigned seat number (e.g. 03A, 35K)"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "train" } }
+          },
+          "then": {
+            "properties": {
+              "trainNumber": {
+                "type": "string",
+                "description": "Train number/code (e.g. G1, D312)"
+              },
+              "trainType": {
+                "type": "string",
+                "enum": ["high_speed", "normal", "subway", "maglev"],
+                "description": "Train category"
+              },
+              "seatClass": {
+                "type": "string",
+                "enum": [
+                  "second_class",
+                  "first_class",
+                  "business_class",
+                  "soft_sleeper",
+                  "hard_sleeper",
+                  "hard_seat",
+                  "standing"
+                ],
+                "description": "Train seat/berth class"
+              },
+              "carriage": {
+                "type": "string",
+                "description": "Carriage number"
+              },
+              "seat": {
+                "type": "string",
+                "description": "Seat number (e.g. 02F, 11A)"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
