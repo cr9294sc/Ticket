@@ -1,0 +1,299 @@
+{
+  "PEK": {
+    "id": "PEK",
+    "city": "北京",
+    "name": "北京首都机场",
+    "shortName": "首都机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      116.6031,
+      40.0799
+    ]
+  },
+  "SHA": {
+    "id": "SHA",
+    "city": "上海",
+    "name": "上海虹桥机场",
+    "shortName": "虹桥机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      121.3363,
+      31.1979
+    ]
+  },
+  "北京南": {
+    "id": "北京南",
+    "city": "京",
+    "name": "北京南站",
+    "shortName": "北京南",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      116.379064,
+      39.864462
+    ]
+  },
+  "上海虹桥": {
+    "id": "上海虹桥",
+    "city": "上海虹桥",
+    "name": "上海虹桥站",
+    "shortName": "上海虹桥",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      121.319321,
+      31.194743
+    ]
+  },
+  "PKX": {
+    "id": "PKX",
+    "city": "北京",
+    "name": "北京大兴机场",
+    "shortName": "大兴机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      116.4105,
+      39.5098
+    ]
+  },
+  "CAN": {
+    "id": "CAN",
+    "city": "广州",
+    "name": "广州白云机场",
+    "shortName": "白云机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      113.2988,
+      23.3924
+    ]
+  },
+  "杭州东": {
+    "id": "杭州东",
+    "city": "杭州",
+    "name": "杭州东站",
+    "shortName": "杭州东",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      120.212427,
+      30.291538
+    ]
+  },
+  "南京南": {
+    "id": "南京南",
+    "city": "京",
+    "name": "南京南站",
+    "shortName": "南京南",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      118.799048,
+      31.968005
+    ]
+  },
+  "XIY": {
+    "id": "XIY",
+    "city": "西安",
+    "name": "西安咸阳机场",
+    "shortName": "咸阳机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      108.7516,
+      34.4371
+    ]
+  },
+  "北京西": {
+    "id": "北京西",
+    "city": "京",
+    "name": "北京西站",
+    "shortName": "北京西",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      116.323294,
+      39.893874
+    ]
+  },
+  "成都东": {
+    "id": "成都东",
+    "city": "成都",
+    "name": "成都东站",
+    "shortName": "成都东",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      104.142672,
+      30.629002
+    ]
+  },
+  "TFU": {
+    "id": "TFU",
+    "city": "成都",
+    "name": "成都天府机场",
+    "shortName": "天府机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      104.4412,
+      30.3197
+    ]
+  },
+  "HAK": {
+    "id": "HAK",
+    "city": "海口",
+    "name": "海口美兰机场",
+    "shortName": "美兰机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      110.459,
+      19.9349
+    ]
+  },
+  "广州南": {
+    "id": "广州南",
+    "city": "广州",
+    "name": "广州南站",
+    "shortName": "广州南",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      113.26708,
+      22.988342
+    ]
+  },
+  "深圳北": {
+    "id": "深圳北",
+    "city": "深圳",
+    "name": "深圳北站",
+    "shortName": "深圳北",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      114.028356,
+      22.607177
+    ]
+  },
+  "SZX": {
+    "id": "SZX",
+    "city": "深圳",
+    "name": "深圳宝安机场",
+    "shortName": "宝安机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      113.8107,
+      22.6393
+    ]
+  },
+  "XMN": {
+    "id": "XMN",
+    "city": "厦门",
+    "name": "厦门高崎机场",
+    "shortName": "高崎机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      118.1277,
+      24.544
+    ]
+  },
+  "天津西": {
+    "id": "天津西",
+    "city": "天津",
+    "name": "天津西站",
+    "shortName": "天津西",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      117.163602,
+      39.158063
+    ]
+  },
+  "武汉": {
+    "id": "武汉",
+    "city": "武汉",
+    "name": "武汉站",
+    "shortName": "武汉",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      114.425521,
+      30.607088
+    ]
+  },
+  "TAO": {
+    "id": "TAO",
+    "city": "青岛",
+    "name": "青岛胶东机场",
+    "shortName": "胶东机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      120.0975,
+      36.3611
+    ]
+  },
+  "青岛": {
+    "id": "青岛",
+    "city": "青岛",
+    "name": "青岛站",
+    "shortName": "青岛",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      120.312592,
+      36.065193
+    ]
+  },
+  "CTU": {
+    "id": "CTU",
+    "city": "成都",
+    "name": "成都双流机场",
+    "shortName": "双流机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      103.9471,
+      30.5785
+    ]
+  },
+  "西安北": {
+    "id": "西安北",
+    "city": "安",
+    "name": "西安北站",
+    "shortName": "西安北",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      108.939062,
+      34.374741
+    ]
+  },
+  "DLC": {
+    "id": "DLC",
+    "city": "大连",
+    "name": "大连周水子机场",
+    "shortName": "周水子机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      121.5386,
+      38.9657
+    ]
+  },
+  "大连北": {
+    "id": "大连北",
+    "city": "大连",
+    "name": "大连北站",
+    "shortName": "大连北",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      121.606328,
+      39.016813
+    ]
+  },
+  "北京朝阳": {
+    "id": "北京朝阳",
+    "city": "京北京",
+    "name": "北京朝阳站",
+    "shortName": "北京朝阳",
+    "type": "TRAIN_STATION",
+    "coordinates": [
+      116.513,
+      39.957
+    ]
+  },
+  "CKG": {
+    "id": "CKG",
+    "city": "重庆",
+    "name": "重庆江北机场",
+    "shortName": "江北机场",
+    "type": "AIRPORT",
+    "coordinates": [
+      106.6417,
+      29.7192
+    ]
+  }
+}

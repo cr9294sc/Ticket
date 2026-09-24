@@ -1,0 +1,843 @@
+{
+  "metadata": {
+    "totalFlightKm": 27071.3,
+    "totalHsrKm": 12577.3,
+    "totalKm": 39648.6,
+    "flightCount": 19,
+    "hsrCount": 14,
+    "totalCount": 33,
+    "years": [
+      2022,
+      2023,
+      2024
+    ],
+    "earthLaps": 0.99
+  },
+  "trips": [
+    {
+      "id": "trip_1_CA1501_2022-01-15",
+      "type": "FLIGHT",
+      "code": "CA1501",
+      "date": "2022-01-15",
+      "year": 2022,
+      "originId": "PEK",
+      "originName": "北京首都机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.6031,
+        40.0799
+      ],
+      "destId": "SHA",
+      "destName": "上海虹桥机场",
+      "destCity": "上海",
+      "destCoords": [
+        121.3363,
+        31.1979
+      ],
+      "distanceKm": 1075.8,
+      "color": "#E41E2B",
+      "airlineName": "中国国航",
+      "notes": "首都-虹桥 国航公务出差"
+    },
+    {
+      "id": "trip_2_CA1502_2022-01-20",
+      "type": "FLIGHT",
+      "code": "CA1502",
+      "date": "2022-01-20",
+      "year": 2022,
+      "originId": "SHA",
+      "originName": "上海虹桥机场",
+      "originCity": "上海",
+      "originCoords": [
+        121.3363,
+        31.1979
+      ],
+      "destId": "PEK",
+      "destName": "北京首都机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.6031,
+        40.0799
+      ],
+      "distanceKm": 1075.8,
+      "color": "#E41E2B",
+      "airlineName": "中国国航",
+      "notes": "虹桥-首都 返程"
+    },
+    {
+      "id": "trip_3_G1_2022-04-03",
+      "type": "HSR",
+      "code": "G1",
+      "date": "2022-04-03",
+      "year": 2022,
+      "originId": "北京南",
+      "originName": "北京南站",
+      "originCity": "京",
+      "originCoords": [
+        116.379064,
+        39.864462
+      ],
+      "destId": "上海虹桥",
+      "destName": "上海虹桥站",
+      "destCity": "上海虹桥",
+      "destCoords": [
+        121.319321,
+        31.194743
+      ],
+      "distanceKm": 1062.2,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "复兴号 京沪标杆"
+    },
+    {
+      "id": "trip_4_G2_2022-04-07",
+      "type": "HSR",
+      "code": "G2",
+      "date": "2022-04-07",
+      "year": 2022,
+      "originId": "上海虹桥",
+      "originName": "上海虹桥站",
+      "originCity": "上海虹桥",
+      "originCoords": [
+        121.319321,
+        31.194743
+      ],
+      "destId": "北京南",
+      "destName": "北京南站",
+      "destCity": "京",
+      "destCoords": [
+        116.379064,
+        39.864462
+      ],
+      "distanceKm": 1062.2,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "京沪高铁返程"
+    },
+    {
+      "id": "trip_5_CZ3101_2022-06-18",
+      "type": "FLIGHT",
+      "code": "CZ3101",
+      "date": "2022-06-18",
+      "year": 2022,
+      "originId": "PKX",
+      "originName": "北京大兴机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.4105,
+        39.5098
+      ],
+      "destId": "CAN",
+      "destName": "广州白云机场",
+      "destCity": "广州",
+      "destCoords": [
+        113.2988,
+        23.3924
+      ],
+      "distanceKm": 1816.0,
+      "color": "#003087",
+      "airlineName": "南方航空",
+      "notes": "大兴-白云 南航宽体机"
+    },
+    {
+      "id": "trip_6_CZ3102_2022-06-25",
+      "type": "FLIGHT",
+      "code": "CZ3102",
+      "date": "2022-06-25",
+      "year": 2022,
+      "originId": "CAN",
+      "originName": "广州白云机场",
+      "originCity": "广州",
+      "originCoords": [
+        113.2988,
+        23.3924
+      ],
+      "destId": "PKX",
+      "destName": "北京大兴机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.4105,
+        39.5098
+      ],
+      "distanceKm": 1816.0,
+      "color": "#003087",
+      "airlineName": "南方航空",
+      "notes": "白云-大兴 返程"
+    },
+    {
+      "id": "trip_7_G25_2022-08-10",
+      "type": "HSR",
+      "code": "G25",
+      "date": "2022-08-10",
+      "year": 2022,
+      "originId": "北京南",
+      "originName": "北京南站",
+      "originCity": "京",
+      "originCoords": [
+        116.379064,
+        39.864462
+      ],
+      "destId": "杭州东",
+      "destName": "杭州东站",
+      "destCity": "杭州",
+      "destCoords": [
+        120.212427,
+        30.291538
+      ],
+      "distanceKm": 1119.8,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "杭州之行"
+    },
+    {
+      "id": "trip_8_G7382_2022-08-14",
+      "type": "HSR",
+      "code": "G7382",
+      "date": "2022-08-14",
+      "year": 2022,
+      "originId": "杭州东",
+      "originName": "杭州东站",
+      "originCity": "杭州",
+      "originCoords": [
+        120.212427,
+        30.291538
+      ],
+      "destId": "南京南",
+      "destName": "南京南站",
+      "destCity": "京",
+      "destCoords": [
+        118.799048,
+        31.968005
+      ],
+      "distanceKm": 229.9,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "宁杭高铁"
+    },
+    {
+      "id": "trip_9_G12_2022-08-16",
+      "type": "HSR",
+      "code": "G12",
+      "date": "2022-08-16",
+      "year": 2022,
+      "originId": "南京南",
+      "originName": "南京南站",
+      "originCity": "京",
+      "originCoords": [
+        118.799048,
+        31.968005
+      ],
+      "destId": "北京南",
+      "destName": "北京南站",
+      "destCity": "京",
+      "destCoords": [
+        116.379064,
+        39.864462
+      ],
+      "distanceKm": 904.6,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "南京返京"
+    },
+    {
+      "id": "trip_10_MU2152_2022-10-02",
+      "type": "FLIGHT",
+      "code": "MU2152",
+      "date": "2022-10-02",
+      "year": 2022,
+      "originId": "SHA",
+      "originName": "上海虹桥机场",
+      "originCity": "上海",
+      "originCoords": [
+        121.3363,
+        31.1979
+      ],
+      "destId": "XIY",
+      "destName": "西安咸阳机场",
+      "destCity": "西安",
+      "destCoords": [
+        108.7516,
+        34.4371
+      ],
+      "distanceKm": 1228.9,
+      "color": "#003B7A",
+      "airlineName": "东方航空",
+      "notes": "虹桥-咸阳 东航西安游"
+    },
+    {
+      "id": "trip_11_MU2153_2022-10-06",
+      "type": "FLIGHT",
+      "code": "MU2153",
+      "date": "2022-10-06",
+      "year": 2022,
+      "originId": "XIY",
+      "originName": "西安咸阳机场",
+      "originCity": "西安",
+      "originCoords": [
+        108.7516,
+        34.4371
+      ],
+      "destId": "SHA",
+      "destName": "上海虹桥机场",
+      "destCity": "上海",
+      "destCoords": [
+        121.3363,
+        31.1979
+      ],
+      "distanceKm": 1228.9,
+      "color": "#003B7A",
+      "airlineName": "东方航空",
+      "notes": "咸阳-虹桥 西安返程"
+    },
+    {
+      "id": "trip_12_G89_2023-02-12",
+      "type": "HSR",
+      "code": "G89",
+      "date": "2023-02-12",
+      "year": 2023,
+      "originId": "北京西",
+      "originName": "北京西站",
+      "originCity": "京",
+      "originCoords": [
+        116.323294,
+        39.893874
+      ],
+      "destId": "成都东",
+      "destName": "成都东站",
+      "destCity": "成都",
+      "destCoords": [
+        104.142672,
+        30.629002
+      ],
+      "distanceKm": 1508.7,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "京蓉高铁穿越秦岭"
+    },
+    {
+      "id": "trip_13_3U8881_2023-02-18",
+      "type": "FLIGHT",
+      "code": "3U8881",
+      "date": "2023-02-18",
+      "year": 2023,
+      "originId": "TFU",
+      "originName": "成都天府机场",
+      "originCity": "成都",
+      "originCoords": [
+        104.4412,
+        30.3197
+      ],
+      "destId": "PKX",
+      "destName": "北京大兴机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.4105,
+        39.5098
+      ],
+      "distanceKm": 1492.5,
+      "color": "#E60012",
+      "airlineName": "四川航空",
+      "notes": "天府-大兴 川航熊猫涂装"
+    },
+    {
+      "id": "trip_14_HU7181_2023-04-29",
+      "type": "FLIGHT",
+      "code": "HU7181",
+      "date": "2023-04-29",
+      "year": 2023,
+      "originId": "PEK",
+      "originName": "北京首都机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.6031,
+        40.0799
+      ],
+      "destId": "HAK",
+      "destName": "海口美兰机场",
+      "destCity": "海口",
+      "destCoords": [
+        110.459,
+        19.9349
+      ],
+      "distanceKm": 2315.2,
+      "color": "#E30613",
+      "airlineName": "海南航空",
+      "notes": "首都-美兰 海航海口度假"
+    },
+    {
+      "id": "trip_15_HU7182_2023-05-04",
+      "type": "FLIGHT",
+      "code": "HU7182",
+      "date": "2023-05-04",
+      "year": 2023,
+      "originId": "HAK",
+      "originName": "海口美兰机场",
+      "originCity": "海口",
+      "originCoords": [
+        110.459,
+        19.9349
+      ],
+      "destId": "PEK",
+      "destName": "北京首都机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.6031,
+        40.0799
+      ],
+      "distanceKm": 2315.2,
+      "color": "#E30613",
+      "airlineName": "海南航空",
+      "notes": "美兰-首都 返京"
+    },
+    {
+      "id": "trip_16_G79_2023-07-08",
+      "type": "HSR",
+      "code": "G79",
+      "date": "2023-07-08",
+      "year": 2023,
+      "originId": "北京西",
+      "originName": "北京西站",
+      "originCity": "京",
+      "originCoords": [
+        116.323294,
+        39.893874
+      ],
+      "destId": "广州南",
+      "destName": "广州南站",
+      "destCity": "广州",
+      "destCoords": [
+        113.26708,
+        22.988342
+      ],
+      "distanceKm": 1901.7,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "京广标杆车次"
+    },
+    {
+      "id": "trip_17_G6505_2023-07-10",
+      "type": "HSR",
+      "code": "G6505",
+      "date": "2023-07-10",
+      "year": 2023,
+      "originId": "广州南",
+      "originName": "广州南站",
+      "originCity": "广州",
+      "originCoords": [
+        113.26708,
+        22.988342
+      ],
+      "destId": "深圳北",
+      "destName": "深圳北站",
+      "destCity": "深圳",
+      "destCoords": [
+        114.028356,
+        22.607177
+      ],
+      "distanceKm": 88.8,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "广深港高铁"
+    },
+    {
+      "id": "trip_18_ZH9109_2023-07-14",
+      "type": "FLIGHT",
+      "code": "ZH9109",
+      "date": "2023-07-14",
+      "year": 2023,
+      "originId": "SZX",
+      "originName": "深圳宝安机场",
+      "originCity": "深圳",
+      "originCoords": [
+        113.8107,
+        22.6393
+      ],
+      "destId": "PEK",
+      "destName": "北京首都机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.6031,
+        40.0799
+      ],
+      "distanceKm": 1957.1,
+      "color": "#003087",
+      "airlineName": "深圳航空",
+      "notes": "宝安-首都 深航返程"
+    },
+    {
+      "id": "trip_19_MF8102_2023-09-22",
+      "type": "FLIGHT",
+      "code": "MF8102",
+      "date": "2023-09-22",
+      "year": 2023,
+      "originId": "PKX",
+      "originName": "北京大兴机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.4105,
+        39.5098
+      ],
+      "destId": "XMN",
+      "destName": "厦门高崎机场",
+      "destCity": "厦门",
+      "destCoords": [
+        118.1277,
+        24.544
+      ],
+      "distanceKm": 1671.9,
+      "color": "#0066CC",
+      "airlineName": "厦门航空",
+      "notes": "大兴-高崎 厦航金砖航线"
+    },
+    {
+      "id": "trip_20_MF8101_2023-09-26",
+      "type": "FLIGHT",
+      "code": "MF8101",
+      "date": "2023-09-26",
+      "year": 2023,
+      "originId": "XMN",
+      "originName": "厦门高崎机场",
+      "originCity": "厦门",
+      "originCoords": [
+        118.1277,
+        24.544
+      ],
+      "destId": "PKX",
+      "destName": "北京大兴机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.4105,
+        39.5098
+      ],
+      "distanceKm": 1671.9,
+      "color": "#0066CC",
+      "airlineName": "厦门航空",
+      "notes": "高崎-大兴 返京"
+    },
+    {
+      "id": "trip_21_G363_2023-11-15",
+      "type": "HSR",
+      "code": "G363",
+      "date": "2023-11-15",
+      "year": 2023,
+      "originId": "天津西",
+      "originName": "天津西站",
+      "originCity": "天津",
+      "originCoords": [
+        117.163602,
+        39.158063
+      ],
+      "destId": "武汉",
+      "destName": "武汉站",
+      "destCity": "武汉",
+      "destCoords": [
+        114.425521,
+        30.607088
+      ],
+      "distanceKm": 982.9,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "津武高铁出差"
+    },
+    {
+      "id": "trip_22_G506_2023-11-18",
+      "type": "HSR",
+      "code": "G506",
+      "date": "2023-11-18",
+      "year": 2023,
+      "originId": "武汉",
+      "originName": "武汉站",
+      "originCity": "武汉",
+      "originCoords": [
+        114.425521,
+        30.607088
+      ],
+      "destId": "北京西",
+      "destName": "北京西站",
+      "destCity": "京",
+      "destCoords": [
+        116.323294,
+        39.893874
+      ],
+      "distanceKm": 1046.8,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "武广北段返京"
+    },
+    {
+      "id": "trip_23_SC1151_2024-01-05",
+      "type": "FLIGHT",
+      "code": "SC1151",
+      "date": "2024-01-05",
+      "year": 2024,
+      "originId": "PEK",
+      "originName": "北京首都机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.6031,
+        40.0799
+      ],
+      "destId": "TAO",
+      "destName": "青岛胶东机场",
+      "destCity": "青岛",
+      "destCoords": [
+        120.0975,
+        36.3611
+      ],
+      "distanceKm": 513.9,
+      "color": "#003087",
+      "airlineName": "山东航空",
+      "notes": "首都-胶东 山航济青线"
+    },
+    {
+      "id": "trip_24_G206_2024-01-08",
+      "type": "HSR",
+      "code": "G206",
+      "date": "2024-01-08",
+      "year": 2024,
+      "originId": "青岛",
+      "originName": "青岛站",
+      "originCity": "青岛",
+      "originCoords": [
+        120.312592,
+        36.065193
+      ],
+      "destId": "北京南",
+      "destName": "北京南站",
+      "destCity": "京",
+      "destCoords": [
+        116.379064,
+        39.864462
+      ],
+      "distanceKm": 545.2,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "青岛返京"
+    },
+    {
+      "id": "trip_25_HO1252_2024-03-12",
+      "type": "FLIGHT",
+      "code": "HO1252",
+      "date": "2024-03-12",
+      "year": 2024,
+      "originId": "PKX",
+      "originName": "北京大兴机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.4105,
+        39.5098
+      ],
+      "destId": "CTU",
+      "destName": "成都双流机场",
+      "destCity": "成都",
+      "destCoords": [
+        103.9471,
+        30.5785
+      ],
+      "distanceKm": 1505.2,
+      "color": "#D4001A",
+      "airlineName": "吉祥航空",
+      "notes": "大兴-双流 吉祥航空"
+    },
+    {
+      "id": "trip_26_D1923_2024-03-16",
+      "type": "HSR",
+      "code": "D1923",
+      "date": "2024-03-16",
+      "year": 2024,
+      "originId": "成都东",
+      "originName": "成都东站",
+      "originCity": "成都",
+      "originCoords": [
+        104.142672,
+        30.629002
+      ],
+      "destId": "西安北",
+      "destName": "西安北站",
+      "destCity": "安",
+      "destCoords": [
+        108.939062,
+        34.374741
+      ],
+      "distanceKm": 612.9,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "西成客专穿越剑门关"
+    },
+    {
+      "id": "trip_27_MU2413_2024-03-20",
+      "type": "FLIGHT",
+      "code": "MU2413",
+      "date": "2024-03-20",
+      "year": 2024,
+      "originId": "XIY",
+      "originName": "西安咸阳机场",
+      "originCity": "西安",
+      "originCoords": [
+        108.7516,
+        34.4371
+      ],
+      "destId": "PEK",
+      "destName": "北京首都机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.6031,
+        40.0799
+      ],
+      "distanceKm": 935.5,
+      "color": "#003B7A",
+      "airlineName": "东方航空",
+      "notes": "咸阳-大兴 东航"
+    },
+    {
+      "id": "trip_28_CZ6147_2024-05-01",
+      "type": "FLIGHT",
+      "code": "CZ6147",
+      "date": "2024-05-01",
+      "year": 2024,
+      "originId": "PKX",
+      "originName": "北京大兴机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.4105,
+        39.5098
+      ],
+      "destId": "DLC",
+      "destName": "大连周水子机场",
+      "destCity": "大连",
+      "destCoords": [
+        121.5386,
+        38.9657
+      ],
+      "distanceKm": 445.7,
+      "color": "#003087",
+      "airlineName": "南方航空",
+      "notes": "大兴-周水子 大连五一游"
+    },
+    {
+      "id": "trip_29_G3518_2024-05-04",
+      "type": "HSR",
+      "code": "G3518",
+      "date": "2024-05-04",
+      "year": 2024,
+      "originId": "大连北",
+      "originName": "大连北站",
+      "originCity": "大连",
+      "originCoords": [
+        121.606328,
+        39.016813
+      ],
+      "destId": "北京朝阳",
+      "destName": "北京朝阳站",
+      "destCity": "京北京",
+      "destCoords": [
+        116.513,
+        39.957
+      ],
+      "distanceKm": 449.4,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "京沈京哈客专"
+    },
+    {
+      "id": "trip_30_G3_2024-07-15",
+      "type": "HSR",
+      "code": "G3",
+      "date": "2024-07-15",
+      "year": 2024,
+      "originId": "北京南",
+      "originName": "北京南站",
+      "originCity": "京",
+      "originCoords": [
+        116.379064,
+        39.864462
+      ],
+      "destId": "上海虹桥",
+      "destName": "上海虹桥站",
+      "destCity": "上海虹桥",
+      "destCoords": [
+        121.319321,
+        31.194743
+      ],
+      "distanceKm": 1062.2,
+      "color": "#10B981",
+      "airlineName": "",
+      "notes": "上海出差"
+    },
+    {
+      "id": "trip_31_CA1836_2024-07-18",
+      "type": "FLIGHT",
+      "code": "CA1836",
+      "date": "2024-07-18",
+      "year": 2024,
+      "originId": "SHA",
+      "originName": "上海虹桥机场",
+      "originCity": "上海",
+      "originCoords": [
+        121.3363,
+        31.1979
+      ],
+      "destId": "PEK",
+      "destName": "北京首都机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.6031,
+        40.0799
+      ],
+      "distanceKm": 1075.8,
+      "color": "#E41E2B",
+      "airlineName": "中国国航",
+      "notes": "虹桥-首都 国航"
+    },
+    {
+      "id": "trip_32_CA1405_2024-08-20",
+      "type": "FLIGHT",
+      "code": "CA1405",
+      "date": "2024-08-20",
+      "year": 2024,
+      "originId": "PEK",
+      "originName": "北京首都机场",
+      "originCity": "北京",
+      "originCoords": [
+        116.6031,
+        40.0799
+      ],
+      "destId": "CKG",
+      "destName": "重庆江北机场",
+      "destCity": "重庆",
+      "destCoords": [
+        106.6417,
+        29.7192
+      ],
+      "distanceKm": 1465.0,
+      "color": "#E41E2B",
+      "airlineName": "中国国航",
+      "notes": "首都-江北 重庆旅行"
+    },
+    {
+      "id": "trip_33_CA1406_2024-08-25",
+      "type": "FLIGHT",
+      "code": "CA1406",
+      "date": "2024-08-25",
+      "year": 2024,
+      "originId": "CKG",
+      "originName": "重庆江北机场",
+      "originCity": "重庆",
+      "originCoords": [
+        106.6417,
+        29.7192
+      ],
+      "destId": "PEK",
+      "destName": "北京首都机场",
+      "destCity": "北京",
+      "destCoords": [
+        116.6031,
+        40.0799
+      ],
+      "distanceKm": 1465.0,
+      "color": "#E41E2B",
+      "airlineName": "中国国航",
+      "notes": "江北-首都 返京"
+    }
+  ]
+}

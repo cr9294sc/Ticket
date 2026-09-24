@@ -1,0 +1,29 @@
+{
+  "name": "china-travel-traces",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "preprocess": "python3 scripts/preprocess.py"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "lucide-vue-next": "^0.460.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/node": "^22.9.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.1",
+    "vue-tsc": "^2.1.10"
+  }
+}
+
