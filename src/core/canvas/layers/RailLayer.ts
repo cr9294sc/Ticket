@@ -20,24 +20,38 @@ export class RailLayer {
 
     // 1. Draw regular tracks
     for (const item of geometries) {
-      if (item.trip.type !== "HSR") continue;
+       if (item.trip.type !== "HSR") continue;
 
-      const isHovered = hoveredTrip?.id === item.trip.id;
-      if (isHovered) continue; // Draw hovered later on top
+       const isHovered = hoveredTrip?.id === item.trip.id;
+       if (isHovered) continue; // Draw hovered later on top
 
-      // 暖色双线轨道:宽底线 + 细虚线枕木
-      ctx.beginPath();
-      ctx.moveTo(item.p0[0], item.p0[1]);
-      ctx.lineTo(item.p1[0], item.p1[1]);
-      ctx.setLineDash([]);
-      ctx.strokeStyle = theme.hsrPrimary;
-      ctx.globalAlpha = 0.28;
-      ctx.lineWidth = baseWidth * 2.4;
-      ctx.stroke();
-      ctx.setLineDash([dashLength, gapLength]);
-      ctx.globalAlpha = 0.95;
-      ctx.lineWidth = baseWidth * 0.8;
-      ctx.stroke();
+       let baseAlpha = 0.28;
+       let dashAlpha = 0.95;
+       if (hoveredTrip) {
+         const isRelated =
+           item.trip.originId === hoveredTrip.originId ||
+           item.trip.destId === hoveredTrip.destId ||
+           item.trip.originId === hoveredTrip.destId ||
+           item.trip.destId === hoveredTrip.originId;
+         if (!isRelated) {
+           baseAlpha = 0.06;
+           dashAlpha = 0.15;
+         }
+       }
+
+       // 暖色双线轨道:宽底线 + 细虚线枕木
+       ctx.beginPath();
+       ctx.moveTo(item.p0[0], item.p0[1]);
+       ctx.lineTo(item.p1[0], item.p1[1]);
+       ctx.setLineDash([]);
+       ctx.strokeStyle = theme.hsrPrimary;
+       ctx.globalAlpha = baseAlpha;
+       ctx.lineWidth = baseWidth * 2.4;
+       ctx.stroke();
+       ctx.setLineDash([dashLength, gapLength]);
+       ctx.globalAlpha = dashAlpha;
+       ctx.lineWidth = baseWidth * 0.8;
+       ctx.stroke();
     }
 
     // 2. Draw hovered track with glow effect on top

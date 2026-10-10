@@ -9,7 +9,7 @@ import {
   BASE_CANVAS_WIDTH,
   BASE_CANVAS_HEIGHT,
 } from "../geo/projection";
-import { calculateFlightBezier } from "../geo/trajectory";
+import { calculateFlightBezier, sampleBezier } from "../geo/trajectory";
 import { hitTestTrips, type PreparedTripGeometry } from "../math/hitTest";
 import { BaseMapLayer } from "./layers/BaseMapLayer";
 import { RailLayer } from "./layers/RailLayer";
@@ -73,8 +73,117 @@ export class RenderEngine {
     this.hubNodeLayer.enableWasm();
   }
 
-  public setVisitedProvinces(names: Iterable<string>, animateNew = false) {
-    this.baseMapLayer.setVisited(names, animateNew);
+  public setVisitedProvinces(names: Iterable<string>, animateNew = false, delayMs = 0) {
+    this.baseMapLayer.setVisited(names, animateNew, delayMs);
+  }
+
+  // ---------- 视口漫游 / 上图动画 ----------
+  private tween: {
+    t0: number; dur: number;
+    from: [number, number, number]; to: [number, number, number];
+  } | null = null;
+  private reveal: { id: string; t0: number; dur: number } | null = null;
+  private pendingFocus: { id: string; reveal: boolean } | null = null;
+
+  private ease(t: number) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  /** 平滑过渡到目标视口变换 */
+  public animateTo(scale: number, offsetX: number, offsetY: number, dur = 900) {
+    const tr = this.transform;
+    this.tween = {
+      t0: performance.now(), dur,
+      from: [tr.scale, tr.offsetX, tr.offsetY], to: [scale, offsetX, offsetY],
+    };
+  }
+
+  /** 平滑居中到世界坐标包围盒 */
+  public flyToBounds(minX: number, minY: number, maxX: number, maxY: number, padding = 0.35, dur = 900) {
+    const rect = this.canvas.getBoundingClientRect();
+    const bw = Math.max(maxX - minX, 20);
+    const bh = Math.max(maxY - minY, 20);
+    const scale = Math.min(
+      Math.max(Math.min(rect.width / (bw * (1 + padding * 2)), rect.height / (bh * (1 + padding * 2))), this.fitScale * 0.9),
+      this.transform.maxScaleValue,
+    );
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    this.animateTo(scale, rect.width / 2 - cx * scale, rect.height / 2 - cy * scale, dur);
+  }
+
+  private tripBounds(g: PreparedTripGeometry) {
+    const pts = g.bezier ? [g.p0, g.bezier.cp, g.p1] : [g.p0, g.p1];
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const;
+  }
+
+  /** 视口飞向行程;reveal=true 时同时由起点向终点绘制高亮动画 */
+  public focusTrip(id: string, reveal = false) {
+    const g = this.geometryMap.get(id);
+    if (!g) {
+      this.pendingFocus = { id, reveal }; // 几何尚未构建,待 setTripsAndLocations 后执行
+      return;
+    }
+    const [a, b, c, d] = this.tripBounds(g);
+    this.flyToBounds(a, b, c, d);
+    if (reveal) this.reveal = { id, t0: performance.now() + 700, dur: 1600 };
+  }
+
+  /** 回到全球全景 */
+  public resetView(dur = 900) {
+    const rect = this.canvas.getBoundingClientRect();
+    const f = this.fitScale;
+    this.animateTo(f, (rect.width - BASE_CANVAS_WIDTH * f) / 2, (rect.height - BASE_CANVAS_HEIGHT * f) / 2, dur);
+  }
+
+  /** 世界坐标包围盒(区域钻取) */
+  public flyToGeoBounds(lngLatBounds: [[number, number], [number, number]]) {
+    const p0 = projectCoordinates(lngLatBounds[0]);
+    const p1 = projectCoordinates(lngLatBounds[1]);
+    if (!p0 || !p1) return;
+    this.flyToBounds(Math.min(p0[0], p1[0]), Math.min(p0[1], p1[1]), Math.max(p0[0], p1[0]), Math.max(p0[1], p1[1]), 0.15);
+  }
+
+  // ---------- 站点拾取(右键菜单) ----------
+  private places: { kind: "airport" | "station"; id: string; label: string; x: number; y: number }[] = [];
+
+  public setCatalogPlaces(
+    airports: { id: string; name: string; lng: number; lat: number }[],
+    stations: { n: string; x: number; y: number }[],
+  ) {
+    const out: typeof this.places = [];
+    for (const a of airports) {
+      const p = projectCoordinates([a.lng, a.lat]);
+      if (p) out.push({ kind: "airport", id: a.id, label: `${a.id} ${a.name}`, x: p[0], y: p[1] });
+    }
+    for (const s of stations) {
+      const p = projectCoordinates([s.x, s.y]);
+      if (p) out.push({ kind: "station", id: s.n, label: `${s.n}站`, x: p[0], y: p[1] });
+    }
+    this.places = out;
+  }
+
+  public pickPlace(screenX: number, screenY: number) {
+    const [wx, wy] = this.transform.screenToWorld(screenX, screenY);
+    const relZoom = this.transform.scale / this.fitScale;
+    const tol = 16 / this.transform.scale;
+    let best: (typeof this.places)[number] | null = null;
+    let bd = tol;
+    for (const p of this.places) {
+      if (p.kind === "station" && relZoom < 2) continue;
+      const d = Math.hypot(p.x - wx, p.y - wy) * (p.kind === "station" ? 1.15 : 1);
+      if (d < bd) { bd = d; best = p; }
+    }
+    return best;
+  }
+
+  public cancelTween() {
+    this.tween = null;
+  }
+
+  public getZoom() {
+    return this.transform.scale / this.fitScale;
   }
 
   public setTripsAndLocations(
@@ -136,6 +245,12 @@ export class RenderEngine {
     }));
 
     this.particleLayer.sync(geometries);
+
+    if (this.pendingFocus && this.geometryMap.has(this.pendingFocus.id)) {
+      const { id, reveal } = this.pendingFocus;
+      this.pendingFocus = null;
+      this.focusTrip(id, reveal);
+    }
   }
 
   public setHoveredTrip(trip: TripEntity | null) {
@@ -214,6 +329,17 @@ export class RenderEngine {
   }
 
   private update(dt: number) {
+    if (this.tween) {
+      const k = Math.min((performance.now() - this.tween.t0) / this.tween.dur, 1);
+      const e = this.ease(k);
+      const { from, to } = this.tween;
+      this.transform.resetTo(
+        from[0] + (to[0] - from[0]) * e,
+        from[1] + (to[1] - from[1]) * e,
+        from[2] + (to[2] - from[2]) * e,
+      );
+      if (k >= 1) this.tween = null;
+    }
     this.particleLayer.update(dt);
   }
 
@@ -235,7 +361,8 @@ export class RenderEngine {
     // Layer 0: China BaseMap
     this.baseMapLayer.render(ctx, this.theme, scale);
 
-    const visible = this.cullGeometries();
+    const revealId = this.reveal ? this.reveal.id : null;
+    const visible = this.cullGeometries().filter((g) => g.trip.id !== revealId);
     this.visibleIds = new Set(visible.map((g) => g.trip.id));
 
     // Layer 1: High-Speed Rail Tracks
@@ -256,6 +383,8 @@ export class RenderEngine {
       scale,
     );
 
+    this.renderReveal(ctx, scale);
+
     // Layer 3: Particles
     this.particleLayer.render(ctx, this.geometryMap, this.visibleIds, this.theme, scale);
 
@@ -269,6 +398,46 @@ export class RenderEngine {
       performance.now(),
       this.viewportRect(30),
     );
+  }
+
+  /** 新航线由起点向终点逐段点亮 */
+  private renderReveal(ctx: CanvasRenderingContext2D, scale: number) {
+    const r = this.reveal;
+    if (!r) return;
+    const g = this.geometryMap.get(r.id);
+    const k = (performance.now() - r.t0) / r.dur;
+    if (!g) { this.reveal = null; return; }
+    if (k < 0) return; // 等待视口飞抵
+    const prog = Math.min(k, 1);
+    const e = this.ease(prog);
+    const N = 64;
+    const n = Math.max(2, Math.floor(N * e));
+    const pt = (t: number): [number, number] =>
+      g.bezier ? sampleBezier(g.bezier, t) : [g.p0[0] + (g.p1[0] - g.p0[0]) * t, g.p0[1] + (g.p1[1] - g.p0[1]) * t];
+    const sf = Math.sqrt(scale);
+    const color = g.trip.type === "FLIGHT" ? this.theme.flightPrimary : this.theme.hsrPrimary;
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const [x, y] = pt((i / n) * e);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.35;
+    ctx.lineWidth = 7 / sf;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 2.4 / sf;
+    ctx.stroke();
+    const [hx, hy] = pt(e);
+    ctx.beginPath();
+    ctx.arc(hx, hy, 4 / sf, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.restore();
+    if (prog >= 1 && k > 1.2) this.reveal = null;
   }
 
   public destroy() {

@@ -29,6 +29,25 @@ export interface TripEntity {
   color: string;
   airlineName?: string;
   notes?: string;
+  /** 铁路细分:高铁/动车 或 普速 */
+  railClass?: "HSR" | "CLASSIC";
+  /** 航电/车辆字段 */
+  aircraft?: string;
+  aircraftBody?: "WIDE" | "NARROW";
+  registration?: string;
+  cabin?: string;
+  seat?: string;
+  trainModel?: string;
+  seatClass?: string;
+  originCountry?: string;
+  destCountry?: string;
+  /** 出发时刻 HH:MM(可选),用于红眼/日间分析 */
+  departTime?: string;
+  /** 在途耗时(分钟);durationEstimated=true 表示按里程估算 */
+  durationMin?: number;
+  durationEstimated?: boolean;
+  /** 数据来源:base=CSV 预处理产物;user=浏览器本地记录 */
+  source?: "base" | "user";
 }
 
 export interface TravelMetadata {

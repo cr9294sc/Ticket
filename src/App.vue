@@ -5,6 +5,8 @@ import DashboardOverlay from "./components/DashboardOverlay.vue";
 import FilterToolbar from "./components/FilterToolbar.vue";
 import TimelineSlider from "./components/TimelineSlider.vue";
 import DataImportModal from "./components/DataImportModal.vue";
+import TripEntryModal from "./components/TripEntryModal.vue";
+import TripListDrawer from "./components/TripListDrawer.vue";
 import ThemeToggle from "./components/ThemeToggle.vue";
 import { useTripStore } from "./stores/useTripStore";
 
@@ -28,6 +30,12 @@ const isImportModalOpen = ref(false);
 
     <!-- Bottom Center Draggable Timeline Slider -->
     <TimelineSlider />
+
+    <!-- Trip Entry & Edit Modal -->
+    <TripEntryModal />
+
+    <!-- Trip List & Management Drawer -->
+    <TripListDrawer />
 
     <!-- Data Import & Management Modal -->
     <DataImportModal

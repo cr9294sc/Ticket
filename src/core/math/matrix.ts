@@ -6,6 +6,9 @@ export class ViewportTransform {
 
   private minScale = 0.5;
   private maxScale = 25.0;
+  public get maxScaleValue() {
+    return this.maxScale;
+  }
 
   constructor(initialScale = 1.0, offsetX = 0, offsetY = 0) {
     this.scale = initialScale;

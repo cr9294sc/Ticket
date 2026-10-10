@@ -31,3 +31,24 @@
   background: rgba(107, 114, 128, 0.8);
 }
 
+
+@layer components {
+  .field {
+    @apply w-full rounded-lg px-3 py-2 text-sm border outline-none transition-colors;
+    @apply bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600;
+    @apply text-slate-900 dark:text-slate-100 focus:border-sky-500;
+    user-select: text;
+  }
+  .field-label {
+    @apply block text-xs mb-1 font-medium text-slate-500 dark:text-slate-400;
+  }
+  .btn {
+    @apply px-3 py-1.5 rounded-lg text-sm font-semibold transition-all active:scale-95;
+  }
+  .btn-primary {
+    @apply bg-sky-600 hover:bg-sky-500 text-white;
+  }
+  .btn-ghost {
+    @apply bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-100;
+  }
+}

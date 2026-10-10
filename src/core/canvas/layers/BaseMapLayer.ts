@@ -45,11 +45,11 @@ export class BaseMapLayer {
   }
 
   /** 设置已到访省份;新增的省份触发一次呼吸轮廓光 */
-  public setVisited(names: Iterable<string>, animateNew = false) {
+  public setVisited(names: Iterable<string>, animateNew = false, delayMs = 0) {
     const next = new Set(names);
     if (animateNew) {
       const now = performance.now();
-      for (const n of next) if (!this.visited.has(n)) this.pulses.set(n, now);
+      for (const n of next) if (!this.visited.has(n)) this.pulses.set(n, now + delayMs);
     }
     this.visited = next;
   }
@@ -119,6 +119,7 @@ export class BaseMapLayer {
       for (const [name, t0] of this.pulses) {
         const k = (now - t0) / 2000;
         const p = this.provincePaths.get(name);
+        if (k < 0 && p) continue; // 延迟启动
         if (k >= 1 || !p) {
           this.pulses.delete(name);
           continue;

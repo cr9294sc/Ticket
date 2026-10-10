@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onUnmounted, watch } from "vue";
 import { useTripStore } from "../stores/useTripStore";
-import { Calendar, History } from "lucide-vue-next";
+import { Calendar, History, Play, Pause, FastForward } from "lucide-vue-next";
 
 const tripStore = useTripStore();
 
@@ -20,13 +20,76 @@ const currentIndex = computed(() => {
 const isDragging = ref(false);
 const trackRef = ref<HTMLDivElement | null>(null);
 
+// Playback state
+const isPlaying = ref(false);
+const playbackSpeed = ref<1 | 2 | 5>(1);
+let timerId: any = null;
+
+const speeds: (1 | 2 | 5)[] = [1, 2, 5];
+const toggleSpeed = () => {
+  const nextIdx = (speeds.indexOf(playbackSpeed.value) + 1) % speeds.length;
+  playbackSpeed.value = speeds[nextIdx];
+  if (isPlaying.value) {
+    stopPlayback();
+    startPlayback();
+  }
+};
+
 const selectIndex = (idx: number) => {
   if (idx >= 0 && idx < yearOptions.value.length) {
     tripStore.selectedYear.value = yearOptions.value[idx];
   }
 };
 
+const startPlayback = () => {
+  isPlaying.value = true;
+  const yearsOnly = yearOptions.value.filter((y): y is number => typeof y === "number");
+  if (!yearsOnly.length) return;
+
+  // If currently on ALL or last year, start from first year
+  if (
+    tripStore.selectedYear.value === "ALL" ||
+    tripStore.selectedYear.value === yearsOnly[yearsOnly.length - 1]
+  ) {
+    tripStore.selectedYear.value = yearsOnly[0];
+  }
+
+  const intervalMs = Math.round(2200 / playbackSpeed.value);
+  timerId = setInterval(() => {
+    const curYear = tripStore.selectedYear.value;
+    const curIdx = yearsOnly.indexOf(curYear as number);
+    if (curIdx < yearsOnly.length - 1) {
+      tripStore.selectedYear.value = yearsOnly[curIdx + 1];
+    } else {
+      // Loop or stop
+      tripStore.selectedYear.value = "ALL";
+      stopPlayback();
+    }
+  }, intervalMs);
+};
+
+const stopPlayback = () => {
+  isPlaying.value = false;
+  if (timerId) {
+    clearInterval(timerId);
+    timerId = null;
+  }
+};
+
+const togglePlayback = () => {
+  if (isPlaying.value) {
+    stopPlayback();
+  } else {
+    startPlayback();
+  }
+};
+
+onUnmounted(() => {
+  stopPlayback();
+});
+
 const handlePointerDown = (e: PointerEvent) => {
+  if (isPlaying.value) stopPlayback();
   isDragging.value = true;
   updateFromPointer(e);
   window.addEventListener("pointermove", handlePointerMove);
@@ -68,16 +131,38 @@ const activePercentage = computed(() => {
     class="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 select-none flex flex-col items-center"
   >
     <div
-      class="glass-panel bg-white/85 dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl shadow-2xl px-5 py-3 flex flex-col gap-2 min-w-[320px] sm:min-w-[420px] backdrop-blur-xl transition-all"
+      class="glass-panel bg-white/85 dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl shadow-2xl px-5 py-3 flex flex-col gap-2 min-w-[340px] sm:min-w-[460px] backdrop-blur-xl transition-all"
     >
       <!-- Timeline Header -->
       <div class="flex items-center justify-between text-xs">
-        <div
-          class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200"
-        >
-          <Calendar class="w-3.5 h-3.5 text-amber-500" />
-          <span>时间轴浏览</span>
+        <div class="flex items-center gap-3">
+          <div
+            class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200"
+          >
+            <Calendar class="w-3.5 h-3.5 text-amber-500" />
+            <span>时空演播回放</span>
+          </div>
+
+          <!-- Play / Speed Controls -->
+          <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
+            <button
+              @click="togglePlayback"
+              :title="isPlaying ? '暂停回放' : '开始逐年演播'"
+              class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-all"
+            >
+              <Pause v-if="isPlaying" class="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <Play v-else class="w-3.5 h-3.5 fill-current" />
+            </button>
+            <button
+              @click="toggleSpeed"
+              title="切换演播倍速"
+              class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold hover:bg-slate-200 dark:hover:bg-slate-700 text-amber-600 dark:text-amber-400"
+            >
+              {{ playbackSpeed }}x
+            </button>
+          </div>
         </div>
+
         <div
           class="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-mono font-medium"
         >
@@ -92,7 +177,7 @@ const activePercentage = computed(() => {
           <span
             class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-sans ml-1 text-slate-600 dark:text-slate-300"
           >
-            {{ tripStore.filteredTrips.value.length }} 条轨迹
+            {{ tripStore.filteredTrips.value.length }} 条
           </span>
         </div>
       </div>
