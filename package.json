@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:wasm": "wasm-pack build crates/geo-core --target web --release --out-dir ../../src/wasm",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "preprocess": "python3 scripts/preprocess.py"

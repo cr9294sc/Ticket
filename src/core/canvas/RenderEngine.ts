@@ -42,6 +42,8 @@ export class RenderEngine {
   private rafId: number | null = null;
   private lastTime = 0;
   private isDestroyed = false;
+  private fitScale = 1;
+  private visibleIds = new Set<string>();
 
   constructor(canvas: HTMLCanvasElement, initialTheme: ColorScheme) {
     this.canvas = canvas;
@@ -59,8 +61,20 @@ export class RenderEngine {
     this.theme = theme;
   }
 
-  public setBaseMapData(geojson: any) {
-    this.baseMapLayer.setData(geojson);
+  public setBaseMapData(data: {
+    countries?: any;
+    admin1?: any;
+    chinaProvinces?: any;
+  }) {
+    this.baseMapLayer.setData(data);
+  }
+
+  public enableWasm() {
+    this.hubNodeLayer.enableWasm();
+  }
+
+  public setVisitedProvinces(names: Iterable<string>, animateNew = false) {
+    this.baseMapLayer.setVisited(names, animateNew);
   }
 
   public setTripsAndLocations(
@@ -152,7 +166,36 @@ export class RenderEngine {
     const offsetX = (w - BASE_CANVAS_WIDTH * fitScale) / 2;
     const offsetY = (h - BASE_CANVAS_HEIGHT * fitScale) / 2;
 
+    this.fitScale = fitScale;
     this.transform.resetTo(fitScale, offsetX, offsetY);
+  }
+
+  /** 视口(世界坐标)矩形 */
+  private viewportRect(margin = 0) {
+    const w = this.canvas.width / this.transform.dpr;
+    const h = this.canvas.height / this.transform.dpr;
+    const [x0, y0] = this.transform.screenToWorld(0, 0);
+    const [x1, y1] = this.transform.screenToWorld(w, h);
+    const m = margin / this.transform.scale;
+    return { x0: x0 - m, y0: y0 - m, x1: x1 + m, y1: y1 + m };
+  }
+
+  /** 视口剔除 + LOD:视口外不渲染;全景视角下碎线(短于约 60 屏幕像素)不渲染 */
+  private cullGeometries(): PreparedTripGeometry[] {
+    const vp = this.viewportRect(20);
+    const relZoom = this.transform.scale / this.fitScale;
+    const minLen = relZoom < 1.6 ? 60 / this.transform.scale : 0;
+    return this.geometries.filter((g) => {
+      const pts = g.bezier ? [g.p0, g.bezier.cp, g.p1] : [g.p0, g.p1];
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const [x, y] of pts) {
+        minX = Math.min(minX, x); minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+      }
+      if (maxX < vp.x0 || minX > vp.x1 || maxY < vp.y0 || minY > vp.y1) return false;
+      if (minLen && Math.hypot(g.p1[0] - g.p0[0], g.p1[1] - g.p0[1]) < minLen) return false;
+      return true;
+    });
   }
 
   private startLoop() {
@@ -192,10 +235,13 @@ export class RenderEngine {
     // Layer 0: China BaseMap
     this.baseMapLayer.render(ctx, this.theme, scale);
 
+    const visible = this.cullGeometries();
+    this.visibleIds = new Set(visible.map((g) => g.trip.id));
+
     // Layer 1: High-Speed Rail Tracks
     this.railLayer.render(
       ctx,
-      this.geometries,
+      visible,
       this.hoveredTrip,
       this.theme,
       scale,
@@ -204,17 +250,25 @@ export class RenderEngine {
     // Layer 2: Flight Arcs
     this.flightLayer.render(
       ctx,
-      this.geometries,
+      visible,
       this.hoveredTrip,
       this.theme,
       scale,
     );
 
     // Layer 3: Particles
-    this.particleLayer.render(ctx, this.geometryMap, this.theme, scale);
+    this.particleLayer.render(ctx, this.geometryMap, this.visibleIds, this.theme, scale);
 
     // Layer 4: Hub Nodes
-    this.hubNodeLayer.render(ctx, this.nodes, this.theme, scale);
+    this.hubNodeLayer.render(
+      ctx,
+      this.nodes,
+      this.theme,
+      scale,
+      this.transform.scale / this.fitScale,
+      performance.now(),
+      this.viewportRect(30),
+    );
   }
 
   public destroy() {

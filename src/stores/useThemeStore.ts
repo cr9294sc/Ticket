@@ -2,15 +2,19 @@ import { ref, computed } from "vue";
 import type { ColorScheme } from "../types/travel";
 
 export const LIGHT_THEME: ColorScheme = {
-  bg: "#FFFFFF",
-  landFill: "#F1F5F9",
-  landStroke: "#CBD5E1",
-  flightPrimary: "#D97706",
-  flightGlow: "rgba(217, 119, 6, 0.35)",
-  hsrPrimary: "#059669",
-  nodeAirport: "#D97706",
-  nodeTrain: "#059669",
-  nodeHalo: "rgba(217, 119, 6, 0.2)",
+  bg: "#E6EBF0",
+  landFill: "#F4F6F8",
+  landStroke: "#9AA5B1",
+  provinceStroke: "rgba(120, 134, 150, 0.45)",
+  visitedFill: "rgba(37, 99, 235, 0.16)",
+  visitedGlow: "rgba(37, 99, 235, 0.5)",
+  visitedStroke: "rgba(37, 99, 235, 0.75)",
+  flightPrimary: "#0F766E",
+  flightGlow: "rgba(15, 118, 110, 0.3)",
+  hsrPrimary: "#C2570C",
+  nodeAirport: "#0F766E",
+  nodeTrain: "#C2570C",
+  nodeHalo: "rgba(15, 118, 110, 0.2)",
   hoverHighlight: "#2563EB",
   textPrimary: "#0F172A",
   textSecondary: "#64748B",
@@ -19,15 +23,19 @@ export const LIGHT_THEME: ColorScheme = {
 };
 
 export const DARK_THEME: ColorScheme = {
-  bg: "#0F172A",
-  landFill: "#1E293B",
-  landStroke: "#334155",
-  flightPrimary: "#FFE066",
-  flightGlow: "rgba(255, 224, 102, 0.4)",
-  hsrPrimary: "#10B981",
-  nodeAirport: "#FFE066",
-  nodeTrain: "#10B981",
-  nodeHalo: "rgba(255, 224, 102, 0.25)",
+  bg: "#050B14",
+  landFill: "#14202E",
+  landStroke: "rgba(110, 140, 170, 0.35)",
+  provinceStroke: "rgba(110, 140, 170, 0.22)",
+  visitedFill: "rgba(56, 140, 248, 0.20)",
+  visitedGlow: "rgba(56, 160, 255, 0.75)",
+  visitedStroke: "rgba(90, 175, 255, 0.85)",
+  flightPrimary: "#4DFFB4",
+  flightGlow: "rgba(77, 255, 180, 0.45)",
+  hsrPrimary: "#FF9F43",
+  nodeAirport: "#4DFFB4",
+  nodeTrain: "#FF9F43",
+  nodeHalo: "rgba(77, 255, 180, 0.25)",
   hoverHighlight: "#60A5FA",
   textPrimary: "#F8FAFC",
   textSecondary: "#94A3B8",
@@ -41,10 +49,8 @@ const isDark = ref<boolean>(false);
 const stored = localStorage.getItem("theme-mode");
 if (stored) {
   isDark.value = stored === "dark";
-} else if (
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-) {
+} else {
+  // 默认夜航深空模式
   isDark.value = true;
 }
 

@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import { RenderEngine } from "../core/canvas/RenderEngine";
 import { useTripStore } from "../stores/useTripStore";
 import { useThemeStore } from "../stores/useThemeStore";
+import { initGeoCore, buildProvinceIndex, type ProvinceIndex } from "../core/wasm";
 import TripTooltip from "./TripTooltip.vue";
 import { RotateCcw, ZoomIn, ZoomOut } from "lucide-vue-next";
 
@@ -11,6 +12,7 @@ const tripStore = useTripStore();
 const themeStore = useThemeStore();
 
 let engine: RenderEngine | null = null;
+let provinceIndex: ProvinceIndex | null = null;
 
 // Hover tooltip positioning
 const mousePos = ref<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -25,21 +27,19 @@ onMounted(async () => {
 
   engine = new RenderEngine(canvasRef.value, themeStore.currentTheme.value);
 
-  // Load World + China basemap GeoJSON
+  // Load Rust/WASM core + layered basemap (countries / overseas admin-1 / China provinces)
   try {
-    const res = await fetch("./data/world_map.json");
-    if (res.ok) {
-      const geojson = await res.json();
-      engine.setBaseMapData(geojson);
-    } else {
-      const fallbackRes = await fetch("./data/china_provinces.json");
-      if (fallbackRes.ok) {
-        const geojson = await fallbackRes.json();
-        engine.setBaseMapData(geojson);
-      }
-    }
+    const [, countries, admin1, chinaProvinces] = await Promise.all([
+      initGeoCore(),
+      fetch("./data/countries.json").then((r) => r.json()),
+      fetch("./data/admin1.json").then((r) => r.json()),
+      fetch("./data/china_provinces.json").then((r) => r.json()),
+    ]);
+    engine.enableWasm();
+    engine.setBaseMapData({ countries, admin1, chinaProvinces });
+    provinceIndex = buildProvinceIndex(chinaProvinces);
   } catch (err) {
-    console.error("Failed to load map GeoJSON", err);
+    console.error("Failed to load map data", err);
   }
 
   // Load initial travel data
@@ -54,8 +54,28 @@ onUnmounted(() => {
   engine?.destroy();
 });
 
+/** 依据全量记录(不受筛选影响)判定到访省份:机场起降点 + 铁路折线穿行 */
+const updateFootprint = (animateNew = false) => {
+  if (!engine || !provinceIndex) return;
+  const visited = new Set<string>();
+  for (const t of tripStore.allTrips.value) {
+    const [x0, y0] = t.originCoords;
+    const [x1, y1] = t.destCoords;
+    if (t.type === "FLIGHT") {
+      for (const [x, y] of [[x0, y0], [x1, y1]]) {
+        const n = provinceIndex.locate(x, y);
+        if (n) visited.add(n);
+      }
+    } else {
+      for (const n of provinceIndex.crossed(new Float64Array([x0, y0, x1, y1]))) visited.add(n);
+    }
+  }
+  engine.setVisitedProvinces(visited, animateNew);
+};
+
 const updateEngineData = () => {
   if (!engine) return;
+  updateFootprint();
   engine.setTripsAndLocations(
     tripStore.filteredTrips.value,
     tripStore.locations.value,

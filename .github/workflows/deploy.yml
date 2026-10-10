@@ -7,6 +7,7 @@ on:
     paths:
       - 'data/**'
       - 'scripts/**'
+      - 'crates/**'
       - 'src/**'
       - 'public/**'
       - 'index.html'
@@ -43,6 +44,21 @@ jobs:
       - name: Run Data Preprocessing
         run: |
           python scripts/preprocess.py
+
+      - name: Setup Rust (wasm32)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Test Rust core
+        run: cargo test --manifest-path crates/geo-core/Cargo.toml
+
+      - name: Build WASM core
+        run: |
+          wasm-pack build crates/geo-core --target web --release --out-dir ../../src/wasm
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

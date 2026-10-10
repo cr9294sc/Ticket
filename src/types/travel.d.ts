@@ -51,6 +51,10 @@ export interface ColorScheme {
   bg: string;
   landFill: string;
   landStroke: string;
+  provinceStroke: string;
+  visitedFill: string;
+  visitedGlow: string;
+  visitedStroke: string;
   flightPrimary: string;
   flightGlow: string;
   hsrPrimary: string;

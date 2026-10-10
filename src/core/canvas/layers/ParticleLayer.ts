@@ -2,6 +2,9 @@ import type { Particle, ColorScheme } from "../../../types/travel";
 import type { PreparedTripGeometry } from "../../math/hitTest";
 import { sampleBezier } from "../../geo/trajectory";
 
+/** 活跃流光总数硬上限(10~20 条) */
+export const MAX_PARTICLES = 16;
+
 export class ParticleLayer {
   private particles: Particle[] = [];
 
@@ -9,9 +12,24 @@ export class ParticleLayer {
    * Sync particles with currently active geometries
    */
   public sync(geometries: PreparedTripGeometry[]) {
-    const flightItems = geometries.filter(
-      (g) => g.trip.type === "FLIGHT" && g.bezier,
-    );
+    // 主干聚焦:按航段重复次数排序,活跃流光硬上限 MAX_PARTICLES
+    const routeCount = new Map<string, number>();
+    const routeKey = (g: PreparedTripGeometry) =>
+      [g.trip.originId, g.trip.destId].sort().join("-");
+    for (const g of geometries) {
+      if (g.trip.type === "FLIGHT") routeCount.set(routeKey(g), (routeCount.get(routeKey(g)) || 0) + 1);
+    }
+    const seen = new Set<string>();
+    const flightItems = geometries
+      .filter((g) => g.trip.type === "FLIGHT" && g.bezier)
+      .sort((a, b) => routeCount.get(routeKey(b))! - routeCount.get(routeKey(a))!)
+      .filter((g) => {
+        const k = routeKey(g);
+        if (seen.has(k)) return false; // 同一走廊只保留一颗
+        seen.add(k);
+        return true;
+      })
+      .slice(0, MAX_PARTICLES);
     const existingMap = new Map<string, Particle>();
     for (const p of this.particles) {
       existingMap.set(p.tripId, p);
@@ -52,6 +70,7 @@ export class ParticleLayer {
   public render(
     ctx: CanvasRenderingContext2D,
     geometryMap: Map<string, PreparedTripGeometry>,
+    visibleIds: Set<string>,
     theme: ColorScheme,
     scale: number,
   ) {
@@ -64,7 +83,8 @@ export class ParticleLayer {
     const positions: [number, number][] = [];
     for (const p of this.particles) {
       const geom = geometryMap.get(p.tripId);
-      if (!geom || !geom.bezier) continue;
+      // 视口外 / 被 LOD 剔除的航段不参与计算
+      if (!geom || !geom.bezier || !visibleIds.has(p.tripId)) continue;
       positions.push(sampleBezier(geom.bezier, p.t));
     }
 

@@ -25,14 +25,18 @@ export class RailLayer {
       const isHovered = hoveredTrip?.id === item.trip.id;
       if (isHovered) continue; // Draw hovered later on top
 
+      // 暖色双线轨道:宽底线 + 细虚线枕木
       ctx.beginPath();
       ctx.moveTo(item.p0[0], item.p0[1]);
       ctx.lineTo(item.p1[0], item.p1[1]);
-
-      ctx.setLineDash([dashLength, gapLength]);
+      ctx.setLineDash([]);
       ctx.strokeStyle = theme.hsrPrimary;
-      ctx.lineWidth = baseWidth;
-      ctx.globalAlpha = 0.85;
+      ctx.globalAlpha = 0.28;
+      ctx.lineWidth = baseWidth * 2.4;
+      ctx.stroke();
+      ctx.setLineDash([dashLength, gapLength]);
+      ctx.globalAlpha = 0.95;
+      ctx.lineWidth = baseWidth * 0.8;
       ctx.stroke();
     }
 
