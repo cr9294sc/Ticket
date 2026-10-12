@@ -3,6 +3,8 @@
 rail_router.py
 Provides rail network Dijkstra routing and real geometry extraction
 using data from the rail-globe project (graph.json, stations.geojson, rail_hsr.geojson).
+Includes a persistent cache (data/rail_routes_cache.json) so CI/CD and production builds
+can resolve real track geometries without requiring the full rail-globe repository.
 """
 
 import json
@@ -14,6 +16,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAIL_GLOBE_DIR = os.path.join(BASE_DIR, "rail-globe.github.io-main")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 PUBLIC_DATA_DIR = os.path.join(BASE_DIR, "public", "data")
+CACHE_FILE = os.path.join(DATA_DIR, "rail_routes_cache.json")
 
 
 def ramer_douglas_peucker(points, epsilon):
@@ -63,29 +66,54 @@ def calculate_polyline_distance_km(coords):
 
 
 class RailRouter:
-    def __init__(self, graph_path=None, stations_path=None):
+    def __init__(self, graph_path=None, stations_path=None, cache_path=None):
         if not graph_path:
             graph_path = os.path.join(RAIL_GLOBE_DIR, "data", "graph.json")
         if not stations_path:
             stations_path = os.path.join(RAIL_GLOBE_DIR, "data", "stations.geojson")
+        if not cache_path:
+            cache_path = CACHE_FILE
 
         self.graph_path = graph_path
         self.stations_path = stations_path
+        self.cache_path = cache_path
         self.graph = None
         self.station_to_hub = {}
         self.adj = None
         self.shape_at = None
         self._loaded = False
+        self.cache = {}
+        self.cache_dirty = False
+        self._load_cache()
+
+    def _load_cache(self):
+        if os.path.exists(self.cache_path):
+            try:
+                with open(self.cache_path, "r", encoding="utf-8") as f:
+                    self.cache = json.load(f)
+            except Exception as e:
+                print(f"Notice: Failed to load rail routes cache: {e}")
+                self.cache = {}
+
+    def _save_cache(self):
+        if not self.cache_dirty:
+            return
+        try:
+            os.makedirs(os.path.dirname(self.cache_path), exist_ok=True)
+            with open(self.cache_path, "w", encoding="utf-8") as f:
+                json.dump(self.cache, f, ensure_ascii=False, indent=2)
+            self.cache_dirty = False
+        except Exception as e:
+            print(f"Warning: Failed to save rail routes cache: {e}")
 
     def load(self):
         if self._loaded:
-            return
+            return True
 
-        if not os.path.exists(self.graph_path):
-            raise FileNotFoundError(f"Rail graph not found at: {self.graph_path}")
-        if not os.path.exists(self.stations_path):
-            raise FileNotFoundError(f"Stations geojson not found at: {self.stations_path}")
+        if not os.path.exists(self.graph_path) or not os.path.exists(self.stations_path):
+            return False
 
+        print(">>> [RailRouter] Initializing graph and stations topology...")
         # 1. Load stations
         with open(self.stations_path, "r", encoding="utf-8") as f:
             st_data = json.load(f)
@@ -130,6 +158,7 @@ class RailRouter:
             self.shape_at[i + 1] = self.shape_at[i] + g["edges"][i * 5 + 4]
 
         self._loaded = True
+        return True
 
     def get_edge_coords(self, edge_idx, start_node):
         g = self.graph
@@ -162,16 +191,36 @@ class RailRouter:
     def find_rail_path(self, from_station, to_station, epsilon=0.0004):
         """
         Search for fastest path between two stations.
+        Checks cache first. If not cached, runs Dijkstra if graph source is available.
         Returns:
             (coords, distance_km) or (None, None)
         """
-        self.load()
+        fn = from_station.strip().rstrip("站")
+        tn = to_station.strip().rstrip("站")
+        cache_key = f"{fn}-{tn}"
+
+        # 1. Check precomputed cache
+        if cache_key in self.cache:
+            entry = self.cache[cache_key]
+            return entry.get("coords"), entry.get("distanceKm")
+
+        # Reverse check if symmetric
+        rev_key = f"{tn}-{fn}"
+        if rev_key in self.cache:
+            entry = self.cache[rev_key]
+            coords = entry.get("coords")
+            if coords:
+                rev_coords = [c for c in reversed(coords)]
+                return rev_coords, entry.get("distanceKm")
+
+        # 2. Try loading graph source
+        if not self.load():
+            # Graph not available (e.g. CI/CD environment where rail-globe is not checked out)
+            return None, None
 
         u = self.resolve_hub(from_station)
         v = self.resolve_hub(to_station)
-        if u is None or v is None:
-            return None, None
-        if u == v:
+        if u is None or v is None or u == v:
             return None, None
 
         # Dijkstra
@@ -222,6 +271,15 @@ class RailRouter:
         # Simplify with RDP for compact payload while keeping curvature
         simplified = ramer_douglas_peucker(coords, epsilon)
         real_dist_km = calculate_polyline_distance_km(simplified)
+
+        # Update cache
+        self.cache[cache_key] = {
+            "coords": simplified,
+            "distanceKm": real_dist_km,
+        }
+        self.cache_dirty = True
+        self._save_cache()
+
         return simplified, real_dist_km
 
 
@@ -229,14 +287,18 @@ def generate_hsr_network_geojson(output_path=None, epsilon=0.005):
     """
     Extract national high-speed rail lines from rail_hsr.geojson,
     simplify geometries with RDP, and output a compact GeoJSON for base map.
+    If source is not present, preserves existing output_path if available.
     """
-    source_path = os.path.join(RAIL_GLOBE_DIR, "data", "rail_hsr.geojson")
-    if not os.path.exists(source_path):
-        print(f"Warning: {source_path} does not exist. Cannot generate rail_network.json.")
-        return None
-
     if not output_path:
         output_path = os.path.join(PUBLIC_DATA_DIR, "rail_network.json")
+
+    source_path = os.path.join(RAIL_GLOBE_DIR, "data", "rail_hsr.geojson")
+    if not os.path.exists(source_path):
+        if os.path.exists(output_path):
+            print(f"Notice: Source rail_hsr.geojson not found; using existing {output_path}")
+            return output_path
+        print(f"Warning: Neither {source_path} nor {output_path} exists.")
+        return None
 
     with open(source_path, "r", encoding="utf-8") as f:
         data = json.load(f)
