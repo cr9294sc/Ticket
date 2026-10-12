@@ -17,6 +17,8 @@ import os
 import re
 import sys
 
+from rail_router import find_rail_path, generate_hsr_network_geojson
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 OUTPUT_DIR = os.path.join(BASE_DIR, "public", "data")
@@ -284,15 +286,15 @@ def main():
             locations_catalog[origin["id"]] = origin
             locations_catalog[destination["id"]] = destination
 
-            # Distance
-            dist_km = haversine_distance(
-                origin["coordinates"], destination["coordinates"]
-            )
-
-            # Airline / train color
-            color = "#10B981"  # Default Emerald for HSR
+            # Distance & Real Track Geometry
+            track_coords = None
             airline_name = ""
+            color = "#10B981"  # Default Emerald for HSR
+
             if trip_type == "FLIGHT":
+                dist_km = haversine_distance(
+                    origin["coordinates"], destination["coordinates"]
+                )
                 flight_count += 1
                 total_flight_km += dist_km
                 # Extract 2-letter airline prefix (e.g., CA from CA1501, 3U from 3U8881)
@@ -304,6 +306,15 @@ def main():
                     color = "#F59E0B"  # Default Gold/Amber
             else:
                 hsr_count += 1
+                # Try finding real rail path using rail_router
+                rail_coords, real_km = find_rail_path(from_loc_raw, to_loc_raw)
+                if rail_coords and len(rail_coords) >= 2:
+                    track_coords = rail_coords
+                    dist_km = real_km
+                else:
+                    dist_km = haversine_distance(
+                        origin["coordinates"], destination["coordinates"]
+                    )
                 total_hsr_km += dist_km
 
             trip_item = {
@@ -325,6 +336,9 @@ def main():
                 "airlineName": airline_name,
                 "notes": notes,
             }
+            if track_coords:
+                trip_item["trackCoords"] = track_coords
+
             trips_list.append(trip_item)
             idx += 1
 
@@ -382,6 +396,13 @@ def main():
             print(f"World & China map saved to: {world_map_path}")
         except Exception as e:
             print(f"Warning: Failed to generate world_map.json: {e}")
+
+    # Generate national HSR network GeoJSON for background map
+    try:
+        rail_network_path = os.path.join(OUTPUT_DIR, "rail_network.json")
+        generate_hsr_network_geojson(rail_network_path)
+    except Exception as e:
+        print(f"Warning: Failed to generate rail_network.json: {e}")
 
     print(
         f"SUCCESS: Preprocessed {len(trips_list)} trips across {len(locations_catalog)} locations."

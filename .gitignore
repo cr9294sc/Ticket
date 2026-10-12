@@ -9,3 +9,5 @@ dist/
 target/
 src/wasm/
 __pycache__/
+
+rail-globe.github.io-main

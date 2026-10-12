@@ -41,17 +41,18 @@ onMounted(async () => {
 
   engine = new RenderEngine(canvasRef.value, themeStore.currentTheme.value);
 
-  // Load Rust/WASM core + layered basemap (countries / overseas admin-1 / China provinces)
+  // Load Rust/WASM core + layered basemap (countries / overseas admin-1 / China provinces / rail network)
   try {
-    const [, countries, admin1, chinaProvinces, regions] = await Promise.all([
+    const [, countries, admin1, chinaProvinces, regions, railNetwork] = await Promise.all([
       initGeoCore(),
       fetch("./data/countries.json").then((r) => r.json()),
       fetch("./data/admin1.json").then((r) => r.json()),
       fetch("./data/china_provinces.json").then((r) => r.json()),
       fetch("./data/regions.json").then((r) => r.json()).catch(() => ({ clusters: [], provinces: [] })),
+      fetch("./data/rail_network.json").then((r) => r.json()).catch(() => null),
     ]);
     engine.enableWasm();
-    engine.setBaseMapData({ countries, admin1, chinaProvinces });
+    engine.setBaseMapData({ countries, admin1, chinaProvinces, railNetwork });
     provinceIndex = buildProvinceIndex(chinaProvinces);
     regionData.value = regions;
   } catch (err) {
@@ -71,7 +72,7 @@ onUnmounted(() => {
   engine?.destroy();
 });
 
-/** 依据全量记录(不受筛选影响)判定到访省份:机场起降点 + 铁路折线穿行 */
+/** 依据全量记录(不受筛选影响)判定到访省份:机场起降点 + 铁路真实折线穿行 */
 const updateFootprint = (animateNew = false, delayMs = 0) => {
   if (!engine || !provinceIndex) return;
   const visited = new Set<string>();
@@ -84,7 +85,17 @@ const updateFootprint = (animateNew = false, delayMs = 0) => {
         if (n) visited.add(n);
       }
     } else {
-      for (const n of provinceIndex.crossed(new Float64Array([x0, y0, x1, y1]))) visited.add(n);
+      if (t.trackCoords && t.trackCoords.length >= 2) {
+        for (let i = 0; i < t.trackCoords.length - 1; i++) {
+          const seg = new Float64Array([
+            t.trackCoords[i][0], t.trackCoords[i][1],
+            t.trackCoords[i + 1][0], t.trackCoords[i + 1][1]
+          ]);
+          for (const n of provinceIndex.crossed(seg)) visited.add(n);
+        }
+      } else {
+        for (const n of provinceIndex.crossed(new Float64Array([x0, y0, x1, y1]))) visited.add(n);
+      }
     }
   }
   engine.setVisitedProvinces(visited, animateNew, delayMs);

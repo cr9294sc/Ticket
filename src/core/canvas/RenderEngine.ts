@@ -113,7 +113,11 @@ export class RenderEngine {
   }
 
   private tripBounds(g: PreparedTripGeometry) {
-    const pts = g.bezier ? [g.p0, g.bezier.cp, g.p1] : [g.p0, g.p1];
+    const pts = g.bezier
+      ? [g.p0, g.bezier.cp, g.p1]
+      : g.trackPoints && g.trackPoints.length >= 2
+      ? g.trackPoints
+      : [g.p0, g.p1];
     const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
     return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const;
   }
@@ -204,11 +208,16 @@ export class RenderEngine {
       if (!p0 || !p1) continue;
 
       let bezier;
+      let trackPoints: [number, number][] | undefined;
       if (trip.type === "FLIGHT") {
         bezier = calculateFlightBezier(p0, p1);
+      } else if (trip.trackCoords && trip.trackCoords.length >= 2) {
+        trackPoints = trip.trackCoords
+          .map((coord) => projectCoordinates(coord))
+          .filter((pt): pt is [number, number] => pt !== null);
       }
 
-      const geom: PreparedTripGeometry = { trip, p0, p1, bezier };
+      const geom: PreparedTripGeometry = { trip, p0, p1, bezier, trackPoints };
       geometries.push(geom);
       geomMap.set(trip.id, geom);
 
@@ -295,13 +304,42 @@ export class RenderEngine {
     return { x0: x0 - m, y0: y0 - m, x1: x1 + m, y1: y1 + m };
   }
 
+function samplePolyline(pts: [number, number][], t: number): [number, number] {
+  if (pts.length === 0) return [0, 0];
+  if (pts.length === 1 || t <= 0) return pts[0];
+  if (t >= 1) return pts[pts.length - 1];
+
+  let totalLen = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    totalLen += Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+  }
+  const target = t * totalLen;
+  let accumulated = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const segLen = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+    if (accumulated + segLen >= target) {
+      const frac = segLen > 0 ? (target - accumulated) / segLen : 0;
+      return [
+        pts[i][0] + (pts[i + 1][0] - pts[i][0]) * frac,
+        pts[i][1] + (pts[i + 1][1] - pts[i][1]) * frac,
+      ];
+    }
+    accumulated += segLen;
+  }
+  return pts[pts.length - 1];
+}
+
   /** 视口剔除 + LOD:视口外不渲染;全景视角下碎线(短于约 60 屏幕像素)不渲染 */
   private cullGeometries(): PreparedTripGeometry[] {
     const vp = this.viewportRect(20);
     const relZoom = this.transform.scale / this.fitScale;
     const minLen = relZoom < 1.6 ? 60 / this.transform.scale : 0;
     return this.geometries.filter((g) => {
-      const pts = g.bezier ? [g.p0, g.bezier.cp, g.p1] : [g.p0, g.p1];
+      const pts = g.bezier
+        ? [g.p0, g.bezier.cp, g.p1]
+        : g.trackPoints && g.trackPoints.length >= 2
+        ? g.trackPoints
+        : [g.p0, g.p1];
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       for (const [x, y] of pts) {
         minX = Math.min(minX, x); minY = Math.min(minY, y);
@@ -413,7 +451,11 @@ export class RenderEngine {
     const N = 64;
     const n = Math.max(2, Math.floor(N * e));
     const pt = (t: number): [number, number] =>
-      g.bezier ? sampleBezier(g.bezier, t) : [g.p0[0] + (g.p1[0] - g.p0[0]) * t, g.p0[1] + (g.p1[1] - g.p0[1]) * t];
+      g.bezier
+        ? sampleBezier(g.bezier, t)
+        : g.trackPoints && g.trackPoints.length >= 2
+        ? samplePolyline(g.trackPoints, t)
+        : [g.p0[0] + (g.p1[0] - g.p0[0]) * t, g.p0[1] + (g.p1[1] - g.p0[1]) * t];
     const sf = Math.sqrt(scale);
     const color = g.trip.type === "FLIGHT" ? this.theme.flightPrimary : this.theme.hsrPrimary;
     ctx.save();

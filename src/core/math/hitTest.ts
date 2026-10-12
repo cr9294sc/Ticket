@@ -83,6 +83,33 @@ export interface PreparedTripGeometry {
   p0: [number, number];
   p1: [number, number];
   bezier?: BezierPoints;
+  trackPoints?: [number, number][];
+}
+
+/**
+ * Distance from point P to a polyline with multiple vertices
+ */
+export function pointToPolylineDistance(
+  px: number,
+  py: number,
+  points: [number, number][],
+): number {
+  if (points.length < 2) return Infinity;
+  let minDistance = Infinity;
+  for (let i = 0; i < points.length - 1; i++) {
+    const d = pointToSegmentDistance(
+      px,
+      py,
+      points[i][0],
+      points[i][1],
+      points[i + 1][0],
+      points[i + 1][1],
+    );
+    if (d < minDistance) {
+      minDistance = d;
+    }
+  }
+  return minDistance;
 }
 
 /**
@@ -101,6 +128,8 @@ export function hitTestTrips(
     let dist = Infinity;
     if (item.trip.type === "FLIGHT" && item.bezier) {
       dist = pointToBezierDistance(wx, wy, item.bezier);
+    } else if (item.trackPoints && item.trackPoints.length >= 2) {
+      dist = pointToPolylineDistance(wx, wy, item.trackPoints);
     } else {
       dist = pointToSegmentDistance(
         wx,

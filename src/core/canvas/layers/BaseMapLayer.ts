@@ -6,6 +6,7 @@ interface BaseMapData {
   countries?: any;
   admin1?: any;
   chinaProvinces?: any;
+  railNetwork?: any;
 }
 
 function compile(features: any[]): Path2D {
@@ -25,6 +26,7 @@ export class BaseMapLayer {
   private chinaPath: Path2D | null = null;
   private chinaOutlinePath: Path2D | null = null;
   private nineDashPath: Path2D | null = null;
+  private railNetworkPath: Path2D | null = null;
   private provincePaths = new Map<string, Path2D>();
   private visited = new Set<string>();
   /** 省份呼吸光环动画:名称 -> 起始毫秒 */
@@ -33,6 +35,7 @@ export class BaseMapLayer {
   public setData(data: BaseMapData) {
     if (data.countries) this.countriesPath = compile(data.countries.features);
     if (data.admin1) this.admin1Path = compile(data.admin1.features);
+    if (data.railNetwork) this.railNetworkPath = compile(data.railNetwork.features);
     if (data.chinaProvinces) {
       const all: any[] = data.chinaProvinces.features;
       const provinces = all.filter((f) => f.properties?.name);
@@ -93,6 +96,13 @@ export class BaseMapLayer {
       ctx.lineWidth = lw * 0.9;
       ctx.stroke(this.chinaPath);
       ctx.setLineDash([]);
+    }
+
+    // 3.5. 全国高速铁路网络骨架底图 (微弱半透明参考线)
+    if (this.railNetworkPath) {
+      ctx.strokeStyle = theme.railNetworkStroke || "rgba(64, 187, 223, 0.16)";
+      ctx.lineWidth = Math.max(0.7 / Math.sqrt(scale), 0.25);
+      ctx.stroke(this.railNetworkPath);
     }
 
     // 4. 足迹点亮:微发光填充

@@ -1,6 +1,19 @@
 import type { TripEntity, ColorScheme } from "../../../types/travel";
 import type { PreparedTripGeometry } from "../../math/hitTest";
 
+function traceTrackPath(ctx: CanvasRenderingContext2D, item: PreparedTripGeometry) {
+  ctx.beginPath();
+  if (item.trackPoints && item.trackPoints.length >= 2) {
+    ctx.moveTo(item.trackPoints[0][0], item.trackPoints[0][1]);
+    for (let i = 1; i < item.trackPoints.length; i++) {
+      ctx.lineTo(item.trackPoints[i][0], item.trackPoints[i][1]);
+    }
+  } else {
+    ctx.moveTo(item.p0[0], item.p0[1]);
+    ctx.lineTo(item.p1[0], item.p1[1]);
+  }
+}
+
 export class RailLayer {
   public render(
     ctx: CanvasRenderingContext2D,
@@ -20,38 +33,38 @@ export class RailLayer {
 
     // 1. Draw regular tracks
     for (const item of geometries) {
-       if (item.trip.type !== "HSR") continue;
+      if (item.trip.type !== "HSR") continue;
 
-       const isHovered = hoveredTrip?.id === item.trip.id;
-       if (isHovered) continue; // Draw hovered later on top
+      const isHovered = hoveredTrip?.id === item.trip.id;
+      if (isHovered) continue; // Draw hovered later on top
 
-       let baseAlpha = 0.28;
-       let dashAlpha = 0.95;
-       if (hoveredTrip) {
-         const isRelated =
-           item.trip.originId === hoveredTrip.originId ||
-           item.trip.destId === hoveredTrip.destId ||
-           item.trip.originId === hoveredTrip.destId ||
-           item.trip.destId === hoveredTrip.originId;
-         if (!isRelated) {
-           baseAlpha = 0.06;
-           dashAlpha = 0.15;
-         }
-       }
+      let baseAlpha = 0.28;
+      let dashAlpha = 0.95;
+      if (hoveredTrip) {
+        const isRelated =
+          item.trip.originId === hoveredTrip.originId ||
+          item.trip.destId === hoveredTrip.destId ||
+          item.trip.originId === hoveredTrip.destId ||
+          item.trip.destId === hoveredTrip.originId;
+        if (!isRelated) {
+          baseAlpha = 0.06;
+          dashAlpha = 0.15;
+        }
+      }
 
-       // 暖色双线轨道:宽底线 + 细虚线枕木
-       ctx.beginPath();
-       ctx.moveTo(item.p0[0], item.p0[1]);
-       ctx.lineTo(item.p1[0], item.p1[1]);
-       ctx.setLineDash([]);
-       ctx.strokeStyle = theme.hsrPrimary;
-       ctx.globalAlpha = baseAlpha;
-       ctx.lineWidth = baseWidth * 2.4;
-       ctx.stroke();
-       ctx.setLineDash([dashLength, gapLength]);
-       ctx.globalAlpha = dashAlpha;
-       ctx.lineWidth = baseWidth * 0.8;
-       ctx.stroke();
+      // 暖色双线轨道:宽底线 + 细虚线枕木
+      traceTrackPath(ctx, item);
+      ctx.setLineDash([]);
+      ctx.strokeStyle = theme.hsrPrimary;
+      ctx.globalAlpha = baseAlpha;
+      ctx.lineWidth = baseWidth * 2.4;
+      ctx.stroke();
+
+      traceTrackPath(ctx, item);
+      ctx.setLineDash([dashLength, gapLength]);
+      ctx.globalAlpha = dashAlpha;
+      ctx.lineWidth = baseWidth * 0.8;
+      ctx.stroke();
     }
 
     // 2. Draw hovered track with glow effect on top
@@ -60,18 +73,14 @@ export class RailLayer {
       if (activeItem) {
         ctx.setLineDash([]);
         // Glow back
-        ctx.beginPath();
-        ctx.moveTo(activeItem.p0[0], activeItem.p0[1]);
-        ctx.lineTo(activeItem.p1[0], activeItem.p1[1]);
+        traceTrackPath(ctx, activeItem);
         ctx.strokeStyle = theme.hoverHighlight;
         ctx.lineWidth = baseWidth * 3.5;
         ctx.globalAlpha = 0.4;
         ctx.stroke();
 
         // Main line
-        ctx.beginPath();
-        ctx.moveTo(activeItem.p0[0], activeItem.p0[1]);
-        ctx.lineTo(activeItem.p1[0], activeItem.p1[1]);
+        traceTrackPath(ctx, activeItem);
         ctx.setLineDash([dashLength * 1.2, gapLength * 0.8]);
         ctx.strokeStyle = "#FFFFFF";
         ctx.lineWidth = baseWidth * 1.5;

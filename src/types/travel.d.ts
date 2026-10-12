@@ -48,6 +48,8 @@ export interface TripEntity {
   durationEstimated?: boolean;
   /** 数据来源:base=CSV 预处理产物;user=浏览器本地记录 */
   source?: "base" | "user";
+  /** 真实铁轨经纬度折线坐标序列: [[lng0, lat0], [lng1, lat1], ...] */
+  trackCoords?: [number, number][];
 }
 
 export interface TravelMetadata {
@@ -77,6 +79,7 @@ export interface ColorScheme {
   flightPrimary: string;
   flightGlow: string;
   hsrPrimary: string;
+  railNetworkStroke?: string;
   nodeAirport: string;
   nodeTrain: string;
   nodeHalo: string;
