@@ -2,58 +2,58 @@ import { ref, computed } from "vue";
 import type { ColorScheme } from "../types/travel";
 
 export const LIGHT_THEME: ColorScheme = {
-  bg: "#E6EBF0",
-  landFill: "#F4F6F8",
-  landStroke: "#9AA5B1",
-  provinceStroke: "rgba(120, 134, 150, 0.45)",
-  visitedFill: "rgba(37, 99, 235, 0.16)",
-  visitedGlow: "rgba(37, 99, 235, 0.5)",
+  bg: "#F1F5F9",
+  landFill: "#FFFFFF",
+  landStroke: "#CBD5E1",
+  provinceStroke: "rgba(148, 163, 184, 0.45)",
+  visitedFill: "rgba(59, 130, 246, 0.14)",
+  visitedGlow: "rgba(59, 130, 246, 0.35)",
   visitedStroke: "rgba(37, 99, 235, 0.75)",
-  flightPrimary: "#0F766E",
-  flightGlow: "rgba(15, 118, 110, 0.3)",
-  hsrPrimary: "#C2570C",
-  railNetworkStroke: "rgba(100, 116, 139, 0.28)",
-  nodeAirport: "#0F766E",
-  nodeTrain: "#C2570C",
-  nodeHalo: "rgba(15, 118, 110, 0.2)",
+  flightPrimary: "#0284C7",
+  flightGlow: "rgba(2, 132, 199, 0.3)",
+  hsrPrimary: "#EA580C",
+  railNetworkStroke: "rgba(203, 213, 225, 0.65)",
+  nodeAirport: "#0284C7",
+  nodeTrain: "#EA580C",
+  nodeHalo: "rgba(2, 132, 199, 0.2)",
   hoverHighlight: "#2563EB",
   textPrimary: "#0F172A",
   textSecondary: "#64748B",
-  cardBg: "rgba(255, 255, 255, 0.88)",
-  cardBorder: "rgba(226, 232, 240, 0.8)",
+  cardBg: "rgba(255, 255, 255, 0.92)",
+  cardBorder: "rgba(226, 232, 240, 0.85)",
 };
 
 export const DARK_THEME: ColorScheme = {
-  bg: "#050B14",
-  landFill: "#14202E",
-  landStroke: "rgba(110, 140, 170, 0.35)",
-  provinceStroke: "rgba(110, 140, 170, 0.22)",
-  visitedFill: "rgba(56, 140, 248, 0.20)",
-  visitedGlow: "rgba(56, 160, 255, 0.75)",
-  visitedStroke: "rgba(90, 175, 255, 0.85)",
-  flightPrimary: "#4DFFB4",
-  flightGlow: "rgba(77, 255, 180, 0.45)",
-  hsrPrimary: "#FF9F43",
-  railNetworkStroke: "rgba(64, 187, 223, 0.16)",
-  nodeAirport: "#4DFFB4",
-  nodeTrain: "#FF9F43",
-  nodeHalo: "rgba(77, 255, 180, 0.25)",
+  bg: "#0B0F17",
+  landFill: "#161F2E",
+  landStroke: "rgba(100, 116, 139, 0.35)",
+  provinceStroke: "rgba(71, 85, 105, 0.4)",
+  visitedFill: "rgba(56, 189, 248, 0.18)",
+  visitedGlow: "rgba(56, 189, 248, 0.6)",
+  visitedStroke: "rgba(56, 189, 248, 0.85)",
+  flightPrimary: "#38BDF8",
+  flightGlow: "rgba(56, 189, 248, 0.45)",
+  hsrPrimary: "#FB923C",
+  railNetworkStroke: "rgba(71, 85, 105, 0.3)",
+  nodeAirport: "#38BDF8",
+  nodeTrain: "#FB923C",
+  nodeHalo: "rgba(56, 189, 248, 0.25)",
   hoverHighlight: "#60A5FA",
   textPrimary: "#F8FAFC",
   textSecondary: "#94A3B8",
-  cardBg: "rgba(15, 23, 42, 0.88)",
+  cardBg: "rgba(15, 23, 42, 0.9)",
   cardBorder: "rgba(51, 65, 85, 0.8)",
 };
 
 const isDark = ref<boolean>(false);
 
-// Initialize system theme or stored theme
-const stored = localStorage.getItem("theme-mode");
+// Initialize system theme or stored theme (defaults to Light Theme)
+const stored = typeof localStorage !== "undefined" ? localStorage.getItem("theme-mode") : null;
 if (stored) {
   isDark.value = stored === "dark";
 } else {
-  // 默认夜航深空模式
-  isDark.value = true;
+  // 默认清新明亮模式
+  isDark.value = false;
 }
 
 const syncDocumentClass = () => {

@@ -115,8 +115,6 @@ const updateFootprint = (animateNew = false, delayMs = 0) => {
 
 const updateEngineData = () => {
   if (!engine) return;
-  updateFootprint(pulseNext, 1900);
-  pulseNext = false;
   engine.setTripsAndLocations(
     tripStore.filteredTrips.value,
     tripStore.locations.value,
@@ -128,6 +126,16 @@ watch(
   () => [tripStore.filteredTrips.value, tripStore.locations.value],
   () => {
     updateEngineData();
+  },
+  { deep: true },
+);
+
+// React to allTrips changes (only recompute footprints when trips actually change)
+watch(
+  () => tripStore.allTrips.value,
+  () => {
+    updateFootprint(pulseNext, 1900);
+    pulseNext = false;
   },
   { deep: true },
 );
@@ -203,13 +211,16 @@ const handlePointerMove = (e: PointerEvent) => {
     engine.transform.pan(dx, dy);
     startX = e.clientX;
     startY = e.clientY;
+    engine.requestRender();
     return;
   }
 
   // Hit testing for hover
   if (engine) {
     const hit = engine.hitTest(e.clientX, e.clientY);
-    tripStore.hoveredTrip.value = hit;
+    if (hit?.id !== tripStore.hoveredTrip.value?.id) {
+      tripStore.hoveredTrip.value = hit;
+    }
   }
 };
 
@@ -230,7 +241,10 @@ const handleWheel = (e: WheelEvent) => {
 
   // Update hover hit immediately
   const hit = engine.hitTest(e.clientX, e.clientY);
-  tripStore.hoveredTrip.value = hit;
+  if (hit?.id !== tripStore.hoveredTrip.value?.id) {
+    tripStore.hoveredTrip.value = hit;
+  }
+  engine.requestRender();
 };
 
 const handleReset = () => {
@@ -260,12 +274,14 @@ const handleZoomIn = () => {
   if (!canvasRef.value || !engine) return;
   const rect = canvasRef.value.getBoundingClientRect();
   engine.transform.zoomAt(rect.width / 2, rect.height / 2, 1.25);
+  engine.requestRender();
 };
 
 const handleZoomOut = () => {
   if (!canvasRef.value || !engine) return;
   const rect = canvasRef.value.getBoundingClientRect();
   engine.transform.zoomAt(rect.width / 2, rect.height / 2, 0.8);
+  engine.requestRender();
 };
 </script>
 
@@ -367,7 +383,7 @@ const handleZoomOut = () => {
       </button>
       <button
         @click="handleReset"
-        title="全球全景 (Global View)"
+        title="中国全景 (China View)"
         class="w-10 h-10 rounded-xl glass-panel bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-lg flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 active:scale-95 transition-all"
       >
         <Globe class="w-4 h-4" />

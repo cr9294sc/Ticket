@@ -35,13 +35,13 @@ describe("projection", () => {
     }
   });
 
-  it("places East Asia roughly centered due to 105°E central meridian rotation", () => {
-    // 105°E, 0°N should be near the center of the canvas
-    const centerPt = worldProjection([105, 0]);
+  it("places China central meridian 105°E at the center of the canvas", () => {
+    // 105°E, 36°N is the projection center
+    const centerPt = worldProjection([105, 36]);
     expect(centerPt).not.toBeNull();
     if (centerPt) {
       expect(centerPt[0]).toBeCloseTo(BASE_CANVAS_WIDTH / 2, 0);
-      expect(centerPt[1]).toBeCloseTo(BASE_CANVAS_HEIGHT / 2, 0);
+      expect(centerPt[1]).toBeCloseTo(390, 0);
     }
   });
 });

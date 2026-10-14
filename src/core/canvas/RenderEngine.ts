@@ -14,7 +14,6 @@ import { hitTestTrips, type PreparedTripGeometry } from "../math/hitTest";
 import { BaseMapLayer, type BaseMapData } from "./layers/BaseMapLayer";
 import { RailLayer } from "./layers/RailLayer";
 import { FlightLayer } from "./layers/FlightLayer";
-import { ParticleLayer } from "./layers/ParticleLayer";
 import { HubNodeLayer, type PreparedNode } from "./layers/HubNodeLayer";
 
 export class RenderEngine {
@@ -26,7 +25,6 @@ export class RenderEngine {
   private baseMapLayer = new BaseMapLayer();
   private railLayer = new RailLayer();
   private flightLayer = new FlightLayer();
-  private particleLayer = new ParticleLayer();
   private hubNodeLayer = new HubNodeLayer();
 
   // Cached Geometries
@@ -38,9 +36,9 @@ export class RenderEngine {
   private hoveredTrip: TripEntity | null = null;
   private theme: ColorScheme;
 
-  // Animation loop
+  // On-demand rendering state
   private rafId: number | null = null;
-  private lastTime = 0;
+  private renderRequested = false;
   private isDestroyed = false;
   private fitScale = 1;
   private visibleIds = new Set<string>();
@@ -54,23 +52,27 @@ export class RenderEngine {
     this.transform = new ViewportTransform();
 
     this.fitToScreen();
-    this.startLoop();
+    this.requestRender();
   }
 
   public setTheme(theme: ColorScheme) {
     this.theme = theme;
+    this.requestRender();
   }
 
   public setBaseMapData(data: BaseMapData) {
     this.baseMapLayer.setData(data);
+    this.requestRender();
   }
 
   public enableWasm() {
     this.hubNodeLayer.enableWasm();
+    this.requestRender();
   }
 
   public setVisitedProvinces(names: Iterable<string>, animateNew = false, delayMs = 0) {
     this.baseMapLayer.setVisited(names, animateNew, delayMs);
+    this.requestRender();
   }
 
   // ---------- 视口漫游 / 上图动画 ----------
@@ -92,6 +94,7 @@ export class RenderEngine {
       t0: performance.now(), dur,
       from: [tr.scale, tr.offsetX, tr.offsetY], to: [scale, offsetX, offsetY],
     };
+    this.requestRender();
   }
 
   /** 平滑居中到世界坐标包围盒 */
@@ -249,17 +252,19 @@ export class RenderEngine {
       count: v.count,
     }));
 
-    this.particleLayer.sync(geometries);
-
     if (this.pendingFocus && this.geometryMap.has(this.pendingFocus.id)) {
       const { id, reveal } = this.pendingFocus;
       this.pendingFocus = null;
       this.focusTrip(id, reveal);
     }
+    this.requestRender();
   }
 
   public setHoveredTrip(trip: TripEntity | null) {
-    this.hoveredTrip = trip;
+    if (this.hoveredTrip?.id !== trip?.id) {
+      this.hoveredTrip = trip;
+      this.requestRender();
+    }
   }
 
   public hitTest(screenX: number, screenY: number): TripEntity | null {
@@ -288,6 +293,7 @@ export class RenderEngine {
 
     this.fitScale = fitScale;
     this.transform.resetTo(fitScale, offsetX, offsetY);
+    this.requestRender();
   }
 
   /** 视口(世界坐标)矩形 */
@@ -322,24 +328,24 @@ export class RenderEngine {
     });
   }
 
-  private startLoop() {
-    this.lastTime = performance.now();
-    const tick = (now: number) => {
-      if (this.isDestroyed) return;
-      const dt = Math.min((now - this.lastTime) / 1000, 0.1);
-      this.lastTime = now;
-
-      this.update(dt);
-      this.render();
-
-      this.rafId = requestAnimationFrame(tick);
-    };
-    this.rafId = requestAnimationFrame(tick);
+  public requestRender() {
+    if (this.renderRequested || this.isDestroyed) return;
+    this.renderRequested = true;
+    this.rafId = requestAnimationFrame(() => {
+      this.renderRequested = false;
+      this.tickFrame();
+    });
   }
 
-  private update(dt: number) {
+  private tickFrame() {
+    if (this.isDestroyed) return;
+
+    let hasActiveAnim = false;
+
+    // 1. Camera Tween
     if (this.tween) {
-      const k = Math.min((performance.now() - this.tween.t0) / this.tween.dur, 1);
+      const now = performance.now();
+      const k = Math.min((now - this.tween.t0) / this.tween.dur, 1);
       const e = this.ease(k);
       const { from, to } = this.tween;
       this.transform.resetTo(
@@ -347,9 +353,34 @@ export class RenderEngine {
         from[1] + (to[1] - from[1]) * e,
         from[2] + (to[2] - from[2]) * e,
       );
-      if (k >= 1) this.tween = null;
+      if (k < 1) {
+        hasActiveAnim = true;
+      } else {
+        this.tween = null;
+      }
     }
-    this.particleLayer.update(dt);
+
+    // 2. Route reveal animation
+    if (this.reveal) {
+      const now = performance.now();
+      const k = (now - this.reveal.t0) / this.reveal.dur;
+      if (k < 1.2) {
+        hasActiveAnim = true;
+      } else {
+        this.reveal = null;
+      }
+    }
+
+    // 3. Province pulse animation
+    if (this.baseMapLayer.hasActivePulse()) {
+      hasActiveAnim = true;
+    }
+
+    this.render();
+
+    if (hasActiveAnim) {
+      this.requestRender();
+    }
   }
 
   private render() {
@@ -394,10 +425,7 @@ export class RenderEngine {
 
     this.renderReveal(ctx, scale);
 
-    // Layer 3: Particles
-    this.particleLayer.render(ctx, this.geometryMap, this.visibleIds, this.theme, scale);
-
-    // Layer 4: Hub Nodes
+    // Layer 3: Hub Nodes
     this.hubNodeLayer.render(
       ctx,
       this.nodes,

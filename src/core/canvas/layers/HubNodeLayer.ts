@@ -54,17 +54,14 @@ export class HubNodeLayer {
       const isAirport = node.location.type === "AIRPORT";
       const color = isAirport ? theme.nodeAirport : theme.nodeTrain;
 
-      // 特等枢纽:雷达呼吸光环(两圈错相扩散)
+      // 特等枢纽:双圈光环装饰
       if (isSuper) {
-        for (let k = 0; k < 2; k++) {
-          const ph = ((now / 2400 + k * 0.5) % 1);
-          ctx.beginPath();
-          ctx.arc(x, y, baseRadius + ph * haloRadius * 2.6, 0, Math.PI * 2);
-          ctx.strokeStyle = color;
-          ctx.globalAlpha = 0.55 * (1 - ph);
-          ctx.lineWidth = 1.2 / scaleFactor;
-          ctx.stroke();
-        }
+        ctx.beginPath();
+        ctx.arc(x, y, haloRadius * 1.5, 0, Math.PI * 2);
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.35;
+        ctx.lineWidth = 1.0 / scaleFactor;
+        ctx.stroke();
       }
 
       ctx.beginPath();
