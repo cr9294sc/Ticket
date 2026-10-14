@@ -94,6 +94,25 @@ export function useTripStore() {
       const tripBundle: TripsDataBundle = await tripRes.json();
       baseTrips.value = tripBundle.trips.map(enrichBase);
       userRecords.value = await tripDb.getAll();
+
+      // 智能增量版本对齐与冲突保护机制
+      const remoteHash = tripBundle.metadata?.buildHash;
+      const lastSyncedHash = typeof localStorage !== "undefined" ? localStorage.getItem("travel_traces_base_hash") : null;
+      if (remoteHash && remoteHash !== lastSyncedHash) {
+        const currentBaseIds = new Set(baseTrips.value.map((t) => t.id));
+        // 清理由于远端基线数据演进而失效的孤立删除标记 (tombstone)
+        const obsoleteTombstones = userRecords.value.filter((r) => r.deleted && !currentBaseIds.has(r.id));
+        if (obsoleteTombstones.length > 0) {
+          for (const obs of obsoleteTombstones) {
+            await tripDb.remove(obs.id);
+          }
+          userRecords.value = userRecords.value.filter((r) => !(r.deleted && !currentBaseIds.has(r.id)));
+        }
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem("travel_traces_base_hash", remoteHash);
+        }
+      }
+
       // 用户记录涉及的站点并入站点字典
       for (const r of userRecords.value) if (r.trip) ensureLocations(r.trip);
     } catch (err: any) {

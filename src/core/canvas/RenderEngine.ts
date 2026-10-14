@@ -9,9 +9,9 @@ import {
   BASE_CANVAS_WIDTH,
   BASE_CANVAS_HEIGHT,
 } from "../geo/projection";
-import { calculateFlightBezier, sampleBezier } from "../geo/trajectory";
+import { calculateFlightBezier, sampleBezier, samplePolyline } from "../geo/trajectory";
 import { hitTestTrips, type PreparedTripGeometry } from "../math/hitTest";
-import { BaseMapLayer } from "./layers/BaseMapLayer";
+import { BaseMapLayer, type BaseMapData } from "./layers/BaseMapLayer";
 import { RailLayer } from "./layers/RailLayer";
 import { FlightLayer } from "./layers/FlightLayer";
 import { ParticleLayer } from "./layers/ParticleLayer";
@@ -61,11 +61,7 @@ export class RenderEngine {
     this.theme = theme;
   }
 
-  public setBaseMapData(data: {
-    countries?: any;
-    admin1?: any;
-    chinaProvinces?: any;
-  }) {
+  public setBaseMapData(data: BaseMapData) {
     this.baseMapLayer.setData(data);
   }
 
@@ -303,31 +299,6 @@ export class RenderEngine {
     const m = margin / this.transform.scale;
     return { x0: x0 - m, y0: y0 - m, x1: x1 + m, y1: y1 + m };
   }
-
-function samplePolyline(pts: [number, number][], t: number): [number, number] {
-  if (pts.length === 0) return [0, 0];
-  if (pts.length === 1 || t <= 0) return pts[0];
-  if (t >= 1) return pts[pts.length - 1];
-
-  let totalLen = 0;
-  for (let i = 0; i < pts.length - 1; i++) {
-    totalLen += Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
-  }
-  const target = t * totalLen;
-  let accumulated = 0;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const segLen = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
-    if (accumulated + segLen >= target) {
-      const frac = segLen > 0 ? (target - accumulated) / segLen : 0;
-      return [
-        pts[i][0] + (pts[i + 1][0] - pts[i][0]) * frac,
-        pts[i][1] + (pts[i + 1][1] - pts[i][1]) * frac,
-      ];
-    }
-    accumulated += segLen;
-  }
-  return pts[pts.length - 1];
-}
 
   /** 视口剔除 + LOD:视口外不渲染;全景视角下碎线(短于约 60 屏幕像素)不渲染 */
   private cullGeometries(): PreparedTripGeometry[] {

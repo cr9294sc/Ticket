@@ -11,7 +11,9 @@
       2023,
       2024
     ],
-    "earthLaps": 1.06
+    "earthLaps": 1.06,
+    "buildHash": "e4cbd7324542",
+    "buildTime": "2026-10-14T05:52:02Z"
   },
   "trips": [
     {

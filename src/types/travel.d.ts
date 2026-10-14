@@ -61,6 +61,8 @@ export interface TravelMetadata {
   totalCount: number;
   years: number[];
   earthLaps: number;
+  buildHash?: string;
+  buildTime?: string;
 }
 
 export interface TripsDataBundle {

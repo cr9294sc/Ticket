@@ -41,23 +41,35 @@ onMounted(async () => {
 
   engine = new RenderEngine(canvasRef.value, themeStore.currentTheme.value);
 
-  // Load Rust/WASM core + layered basemap (countries / overseas admin-1 / China provinces / rail network)
+  // 1. 首屏关键底图（国家轮廓 + 中国省界 + WASM 内核）优先加载，实现快速首屏
   try {
-    const [, countries, admin1, chinaProvinces, regions, railNetwork] = await Promise.all([
+    const [, countries, chinaProvinces] = await Promise.all([
       initGeoCore(),
       fetch("./data/countries.json").then((r) => r.json()),
-      fetch("./data/admin1.json").then((r) => r.json()),
       fetch("./data/china_provinces.json").then((r) => r.json()),
-      fetch("./data/regions.json").then((r) => r.json()).catch(() => ({ clusters: [], provinces: [] })),
-      fetch("./data/rail_network.json").then((r) => r.json()).catch(() => null),
     ]);
     engine.enableWasm();
-    engine.setBaseMapData({ countries, admin1, chinaProvinces, railNetwork });
+    engine.setBaseMapData({ countries, chinaProvinces });
     provinceIndex = buildProvinceIndex(chinaProvinces);
-    regionData.value = regions;
   } catch (err) {
     console.error("Failed to load map data", err);
   }
+
+  // 2. 异步渐进加载细粒度图层（海外一级行政区、全国铁路网、大区划分），避免阻塞首屏渲染
+  Promise.all([
+    fetch("./data/admin1.json").then((r) => r.json()).catch(() => null),
+    fetch("./data/rail_network.json").then((r) => r.json()).catch(() => null),
+    fetch("./data/regions.json").then((r) => r.json()).catch(() => ({ clusters: [], provinces: [] })),
+  ]).then(([admin1, railNetwork, regions]) => {
+    if (engine && (admin1 || railNetwork)) {
+      engine.setBaseMapData({ admin1, railNetwork });
+    }
+    if (regions) {
+      regionData.value = regions;
+    }
+  }).catch((err) => {
+    console.warn("Secondary map layers load warning", err);
+  });
 
   // Load initial travel data
   await tripStore.fetchData();

@@ -69,3 +69,35 @@ export function sampleBezierAngle(bezier: BezierPoints, t: number): number {
     2 * t * (bezier.p1[1] - bezier.cp[1]);
   return Math.atan2(dy, dx);
 }
+
+/**
+ * Sample point along a multi-vertex polyline at t in [0, 1]
+ */
+export function samplePolyline(
+  pts: [number, number][],
+  t: number,
+): [number, number] {
+  if (pts.length === 0) return [0, 0];
+  if (pts.length === 1 || t <= 0) return pts[0];
+  if (t >= 1) return pts[pts.length - 1];
+
+  let totalLen = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    totalLen += Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+  }
+  const target = t * totalLen;
+  let accumulated = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const segLen = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+    if (accumulated + segLen >= target) {
+      const frac = segLen > 0 ? (target - accumulated) / segLen : 0;
+      return [
+        pts[i][0] + (pts[i + 1][0] - pts[i][0]) * frac,
+        pts[i][1] + (pts[i + 1][1] - pts[i][1]) * frac,
+      ];
+    }
+    accumulated += segLen;
+  }
+  return pts[pts.length - 1];
+}
+

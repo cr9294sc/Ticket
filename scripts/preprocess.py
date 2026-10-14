@@ -11,6 +11,8 @@ Preprocesses flight and high-speed rail trips:
 """
 
 import csv
+from datetime import datetime, timezone
+import hashlib
 import json
 import math
 import os
@@ -345,6 +347,14 @@ def main():
     # Sort trips chronologically
     trips_list.sort(key=lambda t: t["date"])
 
+    # Compute build hash from my_trips.csv for version synchronization
+    try:
+        with open(csv_path, "rb") as f:
+            build_hash = hashlib.sha256(f.read()).hexdigest()[:12]
+    except Exception:
+        build_hash = "manual"
+    build_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
     metadata = {
         "totalFlightKm": round(total_flight_km, 1),
         "totalHsrKm": round(total_hsr_km, 1),
@@ -354,6 +364,8 @@ def main():
         "totalCount": flight_count + hsr_count,
         "years": sorted(list(years_set)),
         "earthLaps": round((total_flight_km + total_hsr_km) / 40075.0, 2),
+        "buildHash": build_hash,
+        "buildTime": build_time,
     }
 
     # Write locations.json
@@ -367,35 +379,6 @@ def main():
         json.dump(
             {"metadata": metadata, "trips": trips_list}, f, ensure_ascii=False, indent=2
         )
-
-    # Ensure world_map.json is prepared
-    world_map_path = os.path.join(OUTPUT_DIR, "world_map.json")
-    world_full_path = os.path.join(DATA_DIR, "world_full.json")
-    china_provinces_path = os.path.join(OUTPUT_DIR, "china_provinces.json")
-
-    if os.path.exists(world_full_path) and os.path.exists(china_provinces_path):
-        try:
-            with open(world_full_path, "r", encoding="utf-8") as f:
-                world_data = json.load(f)
-            with open(china_provinces_path, "r", encoding="utf-8") as f:
-                china_data = json.load(f)
-
-            world_features = [
-                feat
-                for feat in world_data.get("features", [])
-                if feat.get("properties", {}).get("name")
-                not in ["China", "Taiwan", "Hong Kong", "Macau"]
-                and feat.get("id") not in ["CHN", "TWN", "HKG", "MAC"]
-            ]
-            combined = {
-                "type": "FeatureCollection",
-                "features": world_features + china_data.get("features", []),
-            }
-            with open(world_map_path, "w", encoding="utf-8") as f:
-                json.dump(combined, f, ensure_ascii=False)
-            print(f"World & China map saved to: {world_map_path}")
-        except Exception as e:
-            print(f"Warning: Failed to generate world_map.json: {e}")
 
     # Generate national HSR network GeoJSON for background map
     try:

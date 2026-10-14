@@ -2,7 +2,7 @@ import { geoPath } from "d3-geo";
 import { worldProjection } from "../../geo/projection";
 import type { ColorScheme } from "../../../types/travel";
 
-interface BaseMapData {
+export interface BaseMapData {
   countries?: any;
   admin1?: any;
   chinaProvinces?: any;

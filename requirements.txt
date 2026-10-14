@@ -1,0 +1,13 @@
+# Python environment dependencies for china-travel-traces
+# Core preprocessing pipeline (scripts/preprocess.py, scripts/rail_router.py, scripts/build_basemap.py)
+# requires Python >= 3.10 and relies solely on Python standard libraries:
+# - csv
+# - json
+# - math
+# - heapq
+# - re
+# - os, sys
+
+# Optional geospatial processing utilities (for advanced basemap simplification or topology tools)
+# shapely>=2.0.0
+# topojson>=1.5
